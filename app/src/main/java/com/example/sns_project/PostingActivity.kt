@@ -1,4 +1,6 @@
 package com.example.sns_project
 
-class PostingActivity {
+import androidx.appcompat.app.AppCompatActivity
+
+class PostingActivity: AppCompatActivity() {
 }
