@@ -1,10 +1,13 @@
 package com.example.sns_project
 
+import android.content.Intent
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Button
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.GravityCompat
 
 import androidx.drawerlayout.widget.DrawerLayout
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         when(item.itemId){
             R.id.menu_item1-> Toast.makeText(this,"MyProfile  실행",Toast.LENGTH_SHORT).show() //프로필 액티비티로
             R.id.menu_item2-> Toast.makeText(this,"Friends 실행",Toast.LENGTH_SHORT).show() //친구창 액티비티로
-            R.id.menu_item3-> Toast.makeText(this,"Posting 실행",Toast.LENGTH_SHORT).show() //포스팅 액티비티로(그냥메인)
+            R.id.menu_item3-> Toast.makeText(this, "Posting 실행", Toast.LENGTH_SHORT).show() //포스팅 액티비티로(그냥메인)
         }
         return false
     }
