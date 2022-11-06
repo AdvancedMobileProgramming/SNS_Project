@@ -25,7 +25,19 @@ class SignInActivity : AppCompatActivity() {
             val userEmail = findViewById<EditText>(R.id.editTextID).text.toString()
             val userPw = findViewById<EditText>(R.id.editTextPW).text.toString()
 
-            if (userEmail != null && userPw != null) signIn(userEmail, userPw)
+            if(userEmail == null) {
+                Toast.makeText(
+                    baseContext, "Put in your E-mail",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else if(userPw == null){
+                Toast.makeText(
+                    baseContext, "Put in your Password",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else if (userEmail != null && userPw != null) signIn(userEmail, userPw)
 
         }
 
@@ -33,7 +45,6 @@ class SignInActivity : AppCompatActivity() {
         signUpButton.setOnClickListener{
             moveSignUpPage()
         }
-
     }
 
     //로그인 함수.
@@ -43,14 +54,13 @@ class SignInActivity : AppCompatActivity() {
                 ?.addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         Toast.makeText(
-                            baseContext, "로그인에 성공 하였습니다.",
+                            baseContext, "Success to Login. Welcome!",
                             Toast.LENGTH_SHORT
                         ).show()
-                        Log.d("account", id)
                         moveMainPage(auth?.currentUser)
                     } else {
                         Toast.makeText(
-                            baseContext, "로그인에 실패 하였습니다.",
+                            baseContext, "Failed to Login. Check your account.",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -59,12 +69,12 @@ class SignInActivity : AppCompatActivity() {
     }
 
     //회원가입 창으로 이동
-    fun moveSignUpPage(){
+    private fun moveSignUpPage(){
         startActivity(Intent(this, SignUpActivity::class.java))
     }
 
     // 유저정보 넘겨주고 메인 액티비티 호출
-    fun moveMainPage(user: FirebaseUser?) {
+    private fun moveMainPage(user: FirebaseUser?) {
         if (user != null) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()

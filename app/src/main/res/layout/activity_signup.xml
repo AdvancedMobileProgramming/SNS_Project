@@ -47,7 +47,7 @@
         android:layout_height="48dp"
         android:layout_marginBottom="24dp"
         android:ems="10"
-        android:hint="Birthday YYYY-MM-DD"
+        android:hint="Birthday YYYYMMDD"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/signUpPw"
         app:layout_constraintEnd_toEndOf="parent"
