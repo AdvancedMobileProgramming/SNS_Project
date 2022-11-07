@@ -2,7 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_nav"
-    app:startDestination="@id/friendsFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/friendsFragment"
@@ -16,4 +16,8 @@
         android:id="@+id/postingFragment"
         android:name="com.example.sns_project.PostingFragment"
         android:label="PostingFragment" />
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.sns_project.HomeFragment"
+        android:label="HomeFragment" />
 </navigation>
