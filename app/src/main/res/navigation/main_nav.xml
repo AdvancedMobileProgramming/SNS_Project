@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_nav"
+    app:startDestination="@id/friendsFragment">
+
+    <fragment
+        android:id="@+id/friendsFragment"
+        android:name="com.example.sns_project.FriendsFragment"
+        android:label="FriendsFragment" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.sns_project.ProfileFragment"
+        android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/postingFragment"
+        android:name="com.example.sns_project.PostingFragment"
+        android:label="PostingFragment" />
+</navigation>
