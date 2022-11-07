@@ -24,7 +24,7 @@ data class userInfo (
     var password : String? = null
 )
 
-class SignUpActivity : AppCompatActivity() {
+class SignUpActivity : AppCompatActivity() { //회원가입 창(가입 안됨)
     private lateinit var auth : FirebaseAuth//사용자의 계정을 관리
     private lateinit var db : FirebaseFirestore
 

@@ -23,7 +23,7 @@ data class Friends(
     var id: String?= null
 )
 
-class FriendsFragment: Fragment(R.layout.fragment_friends) {
+class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구추가, 조회창
     private lateinit var database: DatabaseReference
     private var friends: ArrayList<Friends> = arrayListOf()
 
