@@ -12,6 +12,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.util.regex.Pattern
 import java.util.stream.Collector
@@ -24,16 +25,14 @@ data class userInfo (
     var password : String? = null
 )
 
-class SignUpActivity : AppCompatActivity() { //회원가입 창(가입 안됨)
-    private lateinit var auth : FirebaseAuth//사용자의 계정을 관리
-    private lateinit var db : FirebaseFirestore
+class SignUpActivity : AppCompatActivity() {
+    private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
+    private val db : FirebaseFirestore = Firebase.firestore
+    private val usersCollectionReference : CollectionReference = db.collection("users")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
-
-        auth =  Firebase.auth
-        db = FirebaseFirestore.getInstance()
 
         val signUpButton = findViewById<Button>(R.id.signUpButton)
         signUpButton.setOnClickListener {
@@ -98,7 +97,7 @@ class SignUpActivity : AppCompatActivity() { //회원가입 창(가입 안됨)
         return true
     }
 
-    private fun saveUserInfo(nickname : String, email : String, birth:String, password : String){
+    private fun saveUserInfo(nickname : String, email : String, birth:String, password : String) {
         val userData = hashMapOf(
             "nickname" to nickname,
             "email" to email,
@@ -106,35 +105,13 @@ class SignUpActivity : AppCompatActivity() { //회원가입 창(가입 안됨)
             "password" to password
         )
 
-        val collectionRef : CollectionReference = db.collection("users")
-        val task : Task<DocumentReference> = collectionRef.add(userData)
-        task.addOnSuccessListener { documentReference ->
-            Log.d("doc_id","DocumentSnapshot added with ID: ${documentReference.id}")
-        }.addOnFailureListener { exception ->
-            Log.d("doc_err","Error adding document: ${exception.toString()}")
-        }
 
-        var userInfo = userInfo()
-        userInfo.nickname = nickname
-        userInfo.email = email
-        userInfo.birth = birth
-        userInfo.password = password
+        usersCollectionReference.add(userData)
+            .addOnSuccessListener {
+                Log.d("message", "success")
+            }.addOnFailureListener {}
 
-//        db?.collection("users")
-//            ?.add(data)
-//            ?.addOnSuccessListener {
-//                // 성공할 경우
-//                Toast.makeText(this, "데이터가 추가되었습니다", Toast.LENGTH_SHORT).show()
-//            }
-//            ?.addOnFailureListener { exception ->
-//                // 실패할 경우
-//                Log.w("MainActivity", "Error getting documents: $exception")
-//            }
     }
-//        db?.collection("users")
-//            ?.add(userInfo)
-//
-//        }
 
     //계정 생성
     private fun createAccount(email: String, password : String) {
