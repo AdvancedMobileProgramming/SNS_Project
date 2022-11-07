@@ -23,7 +23,7 @@ data class Friends(
     var id: String?= null
 )
 
-class FriendsFragment: Fragment() {
+class FriendsFragment: Fragment(R.layout.fragment_friends) {
     private lateinit var database: DatabaseReference
     private var friends: ArrayList<Friends> = arrayListOf()
 
