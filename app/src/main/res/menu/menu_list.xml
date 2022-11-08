@@ -7,11 +7,11 @@
     <item
         android:id="@+id/myProfileFragment"
         android:title="MyProfile"
-        android:icon="@drawable/ic_outline_home_24"/>
+        android:icon="@drawable/ic_outline_account_box_24"/>
     <item
         android:id="@+id/profileFragment"
-        android:icon="@drawable/ic_outline_account_box_24"
-        android:title="Edit Profile" />
+        android:title="Edit Profile"
+        android:icon="@drawable/ic_outline_settings_24" />
     <item
         android:id="@+id/friendsFragment"
         android:title="Friends"
