@@ -20,4 +20,8 @@
         android:id="@+id/homeFragment"
         android:name="com.example.sns_project.HomeFragment"
         android:label="HomeFragment" />
+    <fragment
+        android:id="@+id/myProfileFragment"
+        android:name="com.example.sns_project.MyProfileFragment"
+        android:label="MyProfileFragment" />
 </navigation>
