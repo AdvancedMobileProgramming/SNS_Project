@@ -3,21 +3,26 @@
     <item
         android:id="@+id/homeFragment"
         android:title="Home"
+        android:label = "Home"
         android:icon="@drawable/ic_outline_home_24"/>
     <item
         android:id="@+id/myProfileFragment"
         android:title="MyProfile"
-        android:icon="@drawable/ic_outline_account_box_24"/>
+        android:label = "My Profile"
+        android:icon="@drawable/ic_outline_home_24"/>
     <item
         android:id="@+id/profileFragment"
-        android:title="Edit Profile"
-        android:icon="@drawable/ic_outline_settings_24" />
+        android:icon="@drawable/ic_outline_account_box_24"
+        android:label = "Edit Profile"
+        android:title="Edit Profile" />
     <item
         android:id="@+id/friendsFragment"
         android:title="Friends"
+        android:label = "Friends"
         android:icon="@drawable/ic_outline_group_24"/>
     <item
         android:id="@+id/postingFragment"
         android:title="Posting"
+        android:label = "new Posting"
         android:icon="@drawable/ic_outline_add_photo_alternate_24"/>
 </menu>
