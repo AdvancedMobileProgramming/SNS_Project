@@ -73,7 +73,6 @@ class SignUpActivity : AppCompatActivity() {
             requirePermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_Album)
         }
 
-
         val signUpButton = findViewById<Button>(R.id.signUpButton)
         signUpButton.setOnClickListener {
             val signUpNickname = findViewById<EditText>(R.id.signUpNickname).text.toString()
@@ -142,11 +141,8 @@ class SignUpActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == RESULT_OK) {
-
-                    data?.data?.let { uri ->
-                        profileImgView.setImageURI(uri)
-
-
+            data?.data?.let { uri ->
+                profileImgView.setImageURI(uri)
             }
         }
     }
@@ -178,14 +174,13 @@ class SignUpActivity : AppCompatActivity() {
             ).show();
             return false;
         }
-        else if(password != chekPassword){
+        else if(password != chekPassword) {
             Toast.makeText(
                 baseContext, "비밀번호가 다릅니다.",
                 Toast.LENGTH_SHORT
             ).show()
             return false;
         }
-        
         return true
     }
 
@@ -198,10 +193,10 @@ class SignUpActivity : AppCompatActivity() {
         )
 
 
-        usersCollectionReference.add(userData)
+        usersCollectionReference.document(email).set(userData)
             .addOnSuccessListener {
-                Log.d("message", "success")
-            }.addOnFailureListener {}
+            Log.d("message", "success")
+        }.addOnFailureListener {}
 
     }
 
