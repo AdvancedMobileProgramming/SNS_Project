@@ -1,8 +1,10 @@
 package com.example.sns_project
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -38,7 +40,9 @@ class PostingFragment: Fragment(R.layout.fragment_posting) { //게시물 포스�
     private val binding get() = mBinding!!
 
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
-
+        if(it.resultCode == Activity.RESULT_OK) {
+            val imageUrl = it.data?.data
+        }
     }
 
     override fun onCreateView(
@@ -48,6 +52,7 @@ class PostingFragment: Fragment(R.layout.fragment_posting) { //게시물 포스�
     ): View? {
 
         mBinding = FragmentPostingBinding.inflate(inflater, container, false)
+
         binding.postingButton.setOnClickListener {
 
             val editTextTextMultiLine = binding.editTextTextMultiLine.text.toString()
@@ -60,14 +65,12 @@ class PostingFragment: Fragment(R.layout.fragment_posting) { //게시물 포스�
             }
         }
 
-        fun imageClick() {
-            binding.imageButton.setOnClickListener { //imageButton 클릭시 사진 가져오게함
-                val intent = Intent()
-                intent.type = "image/*"
-                intent.action = Intent.ACTION_GET_CONTENT
+        binding.imageButton.setOnClickListener {
+            val intent = Intent()
+            intent.type = "image/*"
+            intent.action = Intent.ACTION_GET_CONTENT
 
-                startForResult.launch(intent)
-            }
+            startForResult.launch(intent)
         }
 
         return binding.root
