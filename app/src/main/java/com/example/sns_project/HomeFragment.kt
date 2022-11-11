@@ -10,5 +10,4 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
     }
-
 }
