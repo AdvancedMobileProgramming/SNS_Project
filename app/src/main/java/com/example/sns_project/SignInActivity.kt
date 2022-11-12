@@ -38,7 +38,6 @@ class SignInActivity : AppCompatActivity() { //로그인 창
                 ).show()
             }
             else if (userEmail != null && userPw != null) signIn(userEmail, userPw)
-
         }
 
         val signUpButton = findViewById<Button>(R.id.moveSignUpButton)

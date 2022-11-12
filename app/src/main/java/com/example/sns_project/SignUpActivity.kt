@@ -3,34 +3,29 @@ package com.example.sns_project
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.Image
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
-import android.util.Log.d
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import kotlinx.android.synthetic.main.activity_main.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_signin.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.FirebaseStorageKtxRegistrar
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
-import java.util.logging.Logger
+import java.net.URI
 import java.util.regex.Pattern
-import java.util.stream.Collector
 
 
 data class userInfo (
@@ -42,26 +37,20 @@ data class userInfo (
 
 @Suppress("DEPRECATION")
 class SignUpActivity : AppCompatActivity() {
-//    val profileImgView = findViewById<ImageView>(R.id.profileImgView) as ImageView
-//    private val checkPermission = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-//        result.forEach {
-//            if(!it.value) {
-//                Toast.makeText(applicationContext, "권한 동의 필요!", Toast.LENGTH_SHORT).show()
-//                finish()
-//            }
-//        }
-//    }
-//    private val readImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
-//        profileImgView.load(uri);
-//    }
-
-
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
 
+    private lateinit var signUpProfile : Uri
+    private lateinit var signUpNickname : String
+    private lateinit var signUpEmail : String
+    private lateinit var signUpBirth : String
+    private lateinit var signUpPw : String
+    private lateinit var signUpCheckPw : String
+
     private val PERMISSION_Album = 101
     private val REQUEST_STORAGE = 1000
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +64,8 @@ class SignUpActivity : AppCompatActivity() {
 
         val signUpButton = findViewById<Button>(R.id.signUpButton)
         signUpButton.setOnClickListener {
+
+//            val signUpProfile = findViewById<ImageView>(R.id.profileImgView)
             val signUpNickname = findViewById<EditText>(R.id.signUpNickname).text.toString()
             val signUpEmail = findViewById<EditText>(R.id.signUpEmail).text.toString()
             val signUpBirth = findViewById<EditText>(R.id.signUpBirth).text.toString()
@@ -91,12 +82,14 @@ class SignUpActivity : AppCompatActivity() {
 
             else{
                 if(checkUserInfo(signUpNickname,signUpEmail, signUpBirth, signUpPw, signUpCheckPw)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
-                    saveUserInfo(signUpNickname, signUpEmail, signUpBirth, signUpPw)
+                    saveUserInfo(signUpProfile, signUpNickname, signUpEmail, signUpBirth, signUpPw)
+//                    saveUserImg();
                     createAccount(signUpEmail, signUpPw)
                 }
             }
         }
     }
+
     fun requirePermissions(permissions: Array<String>, requestCode: Int) {
         Log.d("permission","권한 요청");
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -131,10 +124,9 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = MediaStore.Images.Media.CONTENT_TYPE
+        intent = Intent(Intent.ACTION_PICK)
+        intent!!.type = MediaStore.Images.Media.CONTENT_TYPE
         startActivityForResult(intent, REQUEST_STORAGE)
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -143,7 +135,9 @@ class SignUpActivity : AppCompatActivity() {
         if (resultCode == RESULT_OK) {
             data?.data?.let { uri ->
                 profileImgView.setImageURI(uri)
+                signUpProfile = uri
             }
+
         }
     }
 
@@ -184,8 +178,9 @@ class SignUpActivity : AppCompatActivity() {
         return true
     }
 
-    private fun saveUserInfo(nickname : String, email : String, birth:String, password : String) {
+    private fun saveUserInfo(profileUri : Uri , nickname : String, email : String, birth:String, password : String) {
         val userData = hashMapOf(
+            "profile" to profileUri.toString(),
             "nickname" to nickname,
             "email" to email,
             "birth" to birth,
@@ -213,7 +208,7 @@ class SignUpActivity : AppCompatActivity() {
                         finish()
                     } else {
                         Toast.makeText(
-                            this, "Failed to Sign Up. Try Again!",
+                            this, "Already exist. Try Again!",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
