@@ -32,6 +32,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.fragment_posting.*
+import java.util.*
 
 
 class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_posting
@@ -39,6 +40,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     val PERMISSION_Album = 101
     val REQUEST_STORAGE = 1000
 
+    private var imageURL: String? = null
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
@@ -67,7 +69,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 
 
         binding.postingButton.setOnClickListener {
-
             val editTextTextMultiLine = binding.editTextTextMultiLine.text.toString()
 
             if(editTextTextMultiLine == "") { //포스팅란에 빈칸 입력시
@@ -76,13 +77,17 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                     Toast.LENGTH_SHORT
                 ).show()
             }
+            //HomeFragment 피드창으로 사진과 글이 넘어가는 코드 구현,, 못함 ㅠ
+            this.uploadPost(
+                binding.editTextTextMultiLine.text.toString(),
+            )
         }
 
-        binding.imageButton.setOnClickListener { //이미지버튼에 겔러리에 가서 사진 받아오기(아직은 겔러리까지만 감)
+        binding.imageButton.setOnClickListener { //이미지버튼에 겔러리에 가서 사진 받아오기
             loadImage()
         }
 
-        getResultImage = registerForActivityResult(
+        getResultImage = registerForActivityResult( //갤러리에서 이미지를 가져오게 하기
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
@@ -104,5 +109,42 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         intent_image.type = "image/*"
         intent_image.action = Intent.ACTION_GET_CONTENT
         getResultImage.launch(intent_image)
+    }
+
+    fun uploadPost(content: String) {
+        if(binding.imageButton.drawable != null && this.imageURL == null) { //바꿔야함
+            Toast.makeText(
+                context,
+                "이미지 업로드중..",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+        val data = hashMapOf(
+            //"title" to title,
+            "content" to content,
+            "user" to FirebaseAuth.getInstance().uid, // 현재 로그인 된 유저 정보를 업로드(?)
+            "created_at" to Date(),
+            "image_uri" to this.imageURL
+        )
+        db.collection("post")
+            .add(data)
+            .addOnCompleteListener {
+                Toast.makeText(
+                    context,
+                    "업로드 완료!",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+                //finish() // 업로드가 성공한다면 이 화면을 종료하고 메인 페이지로 돌아감.
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    context,
+                    "포스트 업로드에 실패 하였습니다.\n${it.message}",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
     }
 }
