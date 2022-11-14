@@ -5,6 +5,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -13,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -27,6 +30,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.util.regex.Pattern
 import kotlin.math.log
@@ -36,7 +41,10 @@ class ProfileFragment: Fragment() { //프로필 수정창
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
-
+    private val storage : FirebaseStorage = Firebase.storage
+    private lateinit var imgDataUri : Uri
+    private lateinit var bitmap : Bitmap
+    private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
     private val PERMISSION_Album = 101
     private val REQUEST_STORAGE = 1000
@@ -67,17 +75,23 @@ class ProfileFragment: Fragment() { //프로필 수정창
 
 
         binding.selectProfileButton.setOnClickListener {
-//            val contract = ActivityResultContracts.RequestPermission()
-//
-//            val activityResultLauncher = registerForActivityResult(contract) { isGranted ->
-//                if (isGranted) {
-//                    // 권한이 필요한 작업 수행
-//                    openGallery()
-//                }
-//            }
-//
-//            activityResultLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-            requirePermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_Album)
+            loadImage()
+        }
+
+        getResultImage = registerForActivityResult( //갤러리에서 이미지를 가져오게 하기
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == AppCompatActivity.RESULT_OK) {
+                imgDataUri = result.data?.data!!
+
+                try {
+                    bitmap =
+                        MediaStore.Images.Media.getBitmap(context?.contentResolver, imgDataUri)
+                    profileImgView.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    Toast.makeText(context, "$e", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         binding.saveProfileButton.setOnClickListener {
@@ -102,53 +116,11 @@ class ProfileFragment: Fragment() { //프로필 수정창
         return binding.root
     }
 
-    fun requirePermissions(permissions: Array<String>, requestCode: Int) {
-        Log.d("permission","권한 요청");
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            permissionGranted(requestCode)
-        } else {
-            // isAllPermissionsGranted : 권한이 모두 승인 되었는지 여부 저장
-            // all 메서드를 사용하면 배열 속에 들어 있는 모든 값을 체크할 수 있다.
-//            val isAllPermissionsGranted =
-//                permissions.all { ContextCompat.checkSelfPermission(this) == PackageManager.PERMISSION_GRANTED }
-
-//            val contract = ActivityResultContracts.RequestPermission()
-//
-//            registerForActivityResult(contract) { isGranted ->
-//                if (isGranted) {
-//                    // 권한이 필요한 작업 수행
-//                    openGallery()
-//                }
-//            }
-//            if (isAllPermissionsGranted) {
-//                permissionGranted(requestCode)
-//            } else {
-//                // 사용자에 권한 승인 요청
-//                ActivityCompat.requestPermissions(Activity(), permissions, requestCode)
-//                permissionDenied(requestCode)
-//            }
-            openGallery()
-        }
-    }
-
-    private fun permissionGranted(requestCode: Int) {
-        openGallery()
-    }
-
-    private fun permissionDenied(requestCode: Int) {
-        when (requestCode) {
-            PERMISSION_Album -> Toast.makeText(
-                getContext(),
-                "저장소 권한을 승인해야 앨범에서 이미지를 불러올 수 있습니다.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK)
-        intent.type = MediaStore.Images.Media.CONTENT_TYPE
-        startActivityForResult(intent, REQUEST_STORAGE)
+    fun loadImage() {
+        var intent_image = Intent()
+        intent_image.type = "image/*"
+        intent_image.action = Intent.ACTION_GET_CONTENT
+        getResultImage.launch(intent_image)
 
     }
 
@@ -186,14 +158,14 @@ class ProfileFragment: Fragment() { //프로필 수정창
 //            "birth" to editBirth
 //        )
 
-
+        usersCollectionReference.document(email).update("profileImg", imgDataUri)
         usersCollectionReference.document(email).update("nickname", editUsername)
         usersCollectionReference.document(email).update("birth", editBirth)
         usersCollectionReference.document(email).update("description", editDescription)
-
             .addOnSuccessListener {
                 Log.d("update", "success")
             }.addOnFailureListener {}
+
 
 
     }

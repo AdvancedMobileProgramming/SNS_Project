@@ -30,8 +30,11 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.fragment_posting.*
+import java.net.URI
 import java.util.*
 
 
@@ -44,7 +47,10 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
+    private val storage : FirebaseStorage = Firebase.storage
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
+    private lateinit var bitmap : Bitmap
+    private lateinit var imgDataUri : Uri
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentPostingBinding? = null
@@ -91,10 +97,11 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
             ActivityResultContracts.StartActivityForResult()
         ) { result ->
             if (result.resultCode == RESULT_OK) {
-                val dataUri: Uri? = result.data?.data
+                imgDataUri = result.data?.data!!
+
                 try {
-                    val bitmap: Bitmap =
-                        MediaStore.Images.Media.getBitmap(context?.contentResolver, dataUri)
+                    bitmap =
+                        MediaStore.Images.Media.getBitmap(context?.contentResolver, imgDataUri)
                     binding.imageButton.setImageBitmap(bitmap)
                 } catch (e: Exception) {
                     Toast.makeText(context, "$e", Toast.LENGTH_SHORT).show()
@@ -109,6 +116,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         intent_image.type = "image/*"
         intent_image.action = Intent.ACTION_GET_CONTENT
         getResultImage.launch(intent_image)
+
     }
 
     fun uploadPost(content: String) {
@@ -118,15 +126,24 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                 "이미지 업로드중..",
                 Toast.LENGTH_SHORT
             ).show()
-            return
+
         }
+
+        //사진 uri및 게시물 정보 저장
         val data = hashMapOf(
             //"title" to title,
             "content" to content,
             "user" to FirebaseAuth.getInstance().uid, // 현재 로그인 된 유저 정보를 업로드(?)
             "created_at" to Date(),
-            "image_uri" to this.imageURL
+            "image_uri" to imgDataUri
         )
+
+        //게시물 이미지 정보(uri) storage에 저장.
+        var storageRef = storage.reference
+        var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+        var savePostingImg = postingImg.putFile(imgDataUri)
+
+        Log.d("puuuuu", "${data}");
         db.collection("post")
             .add(data)
             .addOnCompleteListener {

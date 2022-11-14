@@ -3,6 +3,7 @@ package com.example.sns_project
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
@@ -25,6 +28,7 @@ import com.google.firebase.storage.ktx.FirebaseStorageKtxRegistrar
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.net.URI
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -40,6 +44,10 @@ class SignUpActivity : AppCompatActivity() {
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
+    private val storage : FirebaseStorage = Firebase.storage
+    private lateinit var imgDataUri : Uri
+    private lateinit var bitmap : Bitmap
+    private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
     private lateinit var signUpProfile : Uri
     private lateinit var signUpNickname : String
@@ -56,10 +64,26 @@ class SignUpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+        val profileImgView = findViewById<ImageView>(R.id.profileImgView);
+        val selectProfileButton = findViewById<Button>(R.id.selectProfileButton);
+        selectProfileButton.setOnClickListener { //이미지버튼에 겔러리에 가서 사진 받아오기
+            loadImage()
+        }
 
-        val profileSelectButton = findViewById<Button>(R.id.selectProfileButton);
-        profileSelectButton.setOnClickListener {
-            requirePermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_Album)
+        getResultImage = registerForActivityResult( //갤러리에서 이미지를 가져오게 하기
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                imgDataUri = result.data?.data!!
+
+                try {
+                    bitmap =
+                        MediaStore.Images.Media.getBitmap(this?.contentResolver, imgDataUri)
+                    profileImgView.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "$e", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
 
         val signUpButton = findViewById<Button>(R.id.signUpButton)
@@ -82,7 +106,7 @@ class SignUpActivity : AppCompatActivity() {
 
             else{
                 if(checkUserInfo(signUpNickname,signUpEmail, signUpBirth, signUpPw, signUpCheckPw)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
-                    saveUserInfo(signUpProfile, signUpNickname, signUpEmail, signUpBirth, signUpPw)
+                    saveUserInfo(signUpNickname, signUpEmail, signUpBirth, signUpPw)
 //                    saveUserImg();
                     createAccount(signUpEmail, signUpPw)
                 }
@@ -90,44 +114,14 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
-    fun requirePermissions(permissions: Array<String>, requestCode: Int) {
-        Log.d("permission","권한 요청");
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            permissionGranted(requestCode)
-        } else {
-            // isAllPermissionsGranted : 권한이 모두 승인 되었는지 여부 저장
-            // all 메서드를 사용하면 배열 속에 들어 있는 모든 값을 체크할 수 있다.
-            val isAllPermissionsGranted =
-                permissions.all { checkSelfPermission(it) == PackageManager.PERMISSION_GRANTED }
-            if (isAllPermissionsGranted) {
-                permissionGranted(requestCode)
-            } else {
-                // 사용자에 권한 승인 요청
-                ActivityCompat.requestPermissions(this, permissions, requestCode)
-                permissionDenied(requestCode)
-            }
-        }
+    fun loadImage() {
+        var intent_image = Intent()
+        intent_image.type = "image/*"
+        intent_image.action = Intent.ACTION_GET_CONTENT
+        getResultImage.launch(intent_image)
+
     }
 
-    private fun permissionGranted(requestCode: Int) {
-        openGallery()
-    }
-
-    private fun permissionDenied(requestCode: Int) {
-        when (requestCode) {
-            PERMISSION_Album -> Toast.makeText(
-                this,
-                "저장소 권한을 승인해야 앨범에서 이미지를 불러올 수 있습니다.",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
-
-    fun openGallery() {
-        intent = Intent(Intent.ACTION_PICK)
-        intent!!.type = MediaStore.Images.Media.CONTENT_TYPE
-        startActivityForResult(intent, REQUEST_STORAGE)
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -178,20 +172,25 @@ class SignUpActivity : AppCompatActivity() {
         return true
     }
 
-    private fun saveUserInfo(profileUri : Uri , nickname : String, email : String, birth:String, password : String) {
+    private fun saveUserInfo(nickname : String, email : String, birth:String, password : String) {
         val userData = hashMapOf(
-            "profile" to profileUri.toString(),
+            "profileImg" to imgDataUri,
             "nickname" to nickname,
             "email" to email,
             "birth" to birth,
             "password" to password
         )
 
+        //프로필 이미지 정보(uri) storage에 저장.
+        var storageRef = storage.reference
+        var postingImg = storageRef.child("image/profile" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+        var savePostingImg = postingImg.putFile(imgDataUri)
 
         usersCollectionReference.document(email).set(userData)
             .addOnSuccessListener {
             Log.d("message", "success")
         }.addOnFailureListener {}
+
 
     }
 
