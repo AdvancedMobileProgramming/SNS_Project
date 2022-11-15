@@ -13,8 +13,9 @@
         android:src="@drawable/img"
         app:layout_constraintBottom_toTopOf="@+id/selectProfileButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@drawable/logo" />
 
     <Button
         android:id="@+id/selectProfileButton"

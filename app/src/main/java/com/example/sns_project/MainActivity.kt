@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() { //fragment 제어하는 메인
         setContentView(binding.root)
 
         val nhf = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        val topDest = setOf(R.id.homeFragment, R.id.myProfileFragment, R.id.profileFragment, R.id.friendsFragment, R.id.postingFragment)
+        val topDest = setOf(R.id.homeFragment, R.id.myProfileFragment, R.id.profileFragment, R.id.friendsFragment, R.id.postingFragment, R.id.settingFragment)
         appbarc = AppBarConfiguration(topDest, binding.drawerLayout)
         setupActionBarWithNavController(nhf.navController, appbarc)
         binding.navigationView.setupWithNavController(nhf.navController)

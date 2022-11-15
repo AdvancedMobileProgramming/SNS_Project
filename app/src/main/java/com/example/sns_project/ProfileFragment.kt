@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,6 +33,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
 import java.util.regex.Pattern
@@ -41,7 +44,9 @@ class ProfileFragment: Fragment() { //프로필 수정창
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
-    private val storage : FirebaseStorage = Firebase.storage
+    private val storage: FirebaseStorage = Firebase.storage
+    private val storageRef : StorageReference = storage.getReference()
+    val currentUserEmail = auth.currentUser?.email.toString()
     private lateinit var imgDataUri : Uri
     private lateinit var bitmap : Bitmap
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
@@ -58,6 +63,15 @@ class ProfileFragment: Fragment() { //프로필 수정창
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
+    fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
+        imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener {
+            val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+            view.setImageBitmap(bmp)
+        }?.addOnFailureListener {
+// Failed to download the image
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -66,17 +80,12 @@ class ProfileFragment: Fragment() { //프로필 수정창
         // 액티비티 와는 다르게 layoutInflater 를 쓰지 않고 inflater 인자를 가져와 뷰와 연결한다.
         mBinding = FragmentProfileBinding.inflate(inflater, container, false)
 
-        val currentUserEmail = auth.currentUser?.email.toString()
-        usersCollectionReference.document(currentUserEmail).get()
-            .addOnSuccessListener { // it: DocumentSnapshot
-                binding.profileImgView.setImageURI(it["profile"].toString().toUri());
-            }.addOnFailureListener {
-            }
-
-
         binding.selectProfileButton.setOnClickListener {
             loadImage()
         }
+
+        val imageRef =storageRef.child("image/profile/${currentUserEmail}.jpg")
+        displayImageRef(imageRef, binding.profileImgView) //사용자 프로필 이미지 보이기.
 
         getResultImage = registerForActivityResult( //갤러리에서 이미지를 가져오게 하기
             ActivityResultContracts.StartActivityForResult()
@@ -151,23 +160,35 @@ class ProfileFragment: Fragment() { //프로필 수정창
     }
 
     private fun editUserInfo(editUsername : String, editBirth : String, editDescription: String) {
-        val email = auth.currentUser?.email.toString()
 //        val editUserData = hashMapOf(
 //            "nickname" to editUsername,
 //            "email" to email,
 //            "birth" to editBirth
 //        )
 
-        usersCollectionReference.document(email).update("profileImg", imgDataUri)
-        usersCollectionReference.document(email).update("nickname", editUsername)
-        usersCollectionReference.document(email).update("birth", editBirth)
-        usersCollectionReference.document(email).update("description", editDescription)
+        var storageRef = storage.reference
+        var postingImg = storageRef.child("image/profile/${currentUserEmail}.jpg")
+        postingImg.delete()
+        var savePostingImg = postingImg.putFile(imgDataUri)
+
+        usersCollectionReference.document(currentUserEmail).update("profileImg", postingImg.toString())
+        usersCollectionReference.document(currentUserEmail).update("nickname", editUsername)
+        usersCollectionReference.document(currentUserEmail).update("birth", editBirth)
+        usersCollectionReference.document(currentUserEmail).update("description", editDescription)
             .addOnSuccessListener {
-                Log.d("update", "success")
-            }.addOnFailureListener {}
-
-
-
+                Toast.makeText(
+                    context,
+                    "프로필 수정 완료!",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }.addOnFailureListener {
+                Toast.makeText(
+                    context,
+                    "프로필 수정에 실패 하였습니다.\n${it.message}",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
     }
-
 }

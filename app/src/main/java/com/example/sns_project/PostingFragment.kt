@@ -74,7 +74,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
         mBinding = FragmentPostingBinding.inflate(inflater, container, false)
 
 
@@ -120,7 +119,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         intent_image.type = "image/*"
         intent_image.action = Intent.ACTION_GET_CONTENT
         getResultImage.launch(intent_image)
-
     }
 
     fun uploadPost(content: String) {

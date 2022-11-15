@@ -131,7 +131,6 @@ class SignUpActivity : AppCompatActivity() {
                 profileImgView.setImageURI(uri)
                 signUpProfile = uri
             }
-
         }
     }
 
@@ -173,18 +172,18 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun saveUserInfo(nickname : String, email : String, birth:String, password : String) {
+        //프로필 이미지 정보(uri) storage에 저장.
+        var storageRef = storage.reference
+        var postingImg = storageRef.child("image/profile/${email}.jpg")
+        var savePostingImg = postingImg.putFile(imgDataUri)
+
         val userData = hashMapOf(
-            "profileImg" to imgDataUri,
+//            "profileImg" to postingImg.toString(),
             "nickname" to nickname,
             "email" to email,
             "birth" to birth,
             "password" to password
         )
-
-        //프로필 이미지 정보(uri) storage에 저장.
-        var storageRef = storage.reference
-        var postingImg = storageRef.child("image/profile" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
-        var savePostingImg = postingImg.putFile(imgDataUri)
 
         usersCollectionReference.document(email).set(userData)
             .addOnSuccessListener {

@@ -24,4 +24,9 @@
         android:id="@+id/myProfileFragment"
         android:name="com.example.sns_project.MyProfileFragment"
         android:label="My Profile" />
+    <fragment
+        android:id="@+id/settingFragment"
+        android:name="com.example.sns_project.SettingFragment"
+        android:label="Setting" />
+
 </navigation>
