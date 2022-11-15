@@ -5,17 +5,29 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/imageButton5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/profileImgView"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
         android:layout_marginBottom="32dp"
+        android:src="@drawable/img"
         app:layout_constraintBottom_toTopOf="@+id/signUpNickname"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/imagebutton"
-        tools:ignore="SpeakableTextPresentCheck" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/selectProfileButton"
+        android:layout_width="167dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="32dp"
+        android:text="Select Profile"
+        app:layout_constraintBottom_toTopOf="@+id/signUpNickname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileImgView" />
 
     <EditText
         android:id="@+id/signUpNickname"
@@ -54,7 +66,6 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
 
-
     <EditText
         android:id="@+id/signUpPw"
         android:layout_width="317dp"
@@ -92,5 +103,8 @@
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         tools:ignore="MissingConstraints" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

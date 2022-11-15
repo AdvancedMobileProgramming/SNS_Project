@@ -5,66 +5,73 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageButton
-        android:id="@+id/imageButton2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
+    <ImageView
+        android:id="@+id/profileImgView"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/img"
+        app:layout_constraintBottom_toTopOf="@+id/selectProfileButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/imagebutton"
-        tools:ignore="SpeakableTextPresentCheck" />
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <Button
+        android:id="@+id/selectProfileButton"
+        android:layout_width="167dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="32dp"
+        android:text="Select Profile"
+        app:layout_constraintBottom_toTopOf="@+id/editUsername"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/editUsername"
         android:layout_width="350dp"
         android:layout_height="48dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
         android:hint="User Name"
         android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/editBirth"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButton2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName2"
+        android:id="@+id/editBirth"
         android:layout_width="350dp"
         android:layout_height="51dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginBottom="24dp"
         android:ems="10"
         android:hint="Birthday (Age)"
         android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/editDescription"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/editDescription"
         android:layout_width="350dp"
-        android:layout_height="250dp"
-        android:layout_marginTop="16dp"
+        android:layout_height="192dp"
+        android:layout_marginBottom="32dp"
         android:ems="10"
         android:gravity="top"
         android:hint="Description"
         android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/saveProfileButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName2" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:id="@+id/saveProfileButton"
+        android:layout_width="377dp"
+        android:layout_height="67dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="32dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
         android:text="Save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName3" />
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

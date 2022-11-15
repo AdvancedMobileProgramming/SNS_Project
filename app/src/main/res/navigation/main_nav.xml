@@ -7,21 +7,21 @@
     <fragment
         android:id="@+id/friendsFragment"
         android:name="com.example.sns_project.FriendsFragment"
-        android:label="FriendsFragment" />
+        android:label="Friends" />
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.sns_project.ProfileFragment"
-        android:label="ProfileFragment" />
+        android:label="Edit Profile" />
     <fragment
         android:id="@+id/postingFragment"
         android:name="com.example.sns_project.PostingFragment"
-        android:label="PostingFragment" />
+        android:label="new Posting" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.sns_project.HomeFragment"
-        android:label="HomeFragment" />
+        android:label="SNS" />
     <fragment
         android:id="@+id/myProfileFragment"
         android:name="com.example.sns_project.MyProfileFragment"
-        android:label="MyProfileFragment" />
+        android:label="My Profile" />
 </navigation>

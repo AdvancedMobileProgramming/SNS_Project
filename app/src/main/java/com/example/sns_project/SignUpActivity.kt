@@ -1,21 +1,35 @@
 package com.example.sns_project
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.gms.tasks.Task
+import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.FirebaseStorageKtxRegistrar
+import com.google.firebase.storage.ktx.storage
+import kotlinx.android.synthetic.main.activity_signup.*
+import java.net.URI
+import java.util.*
 import java.util.regex.Pattern
-import java.util.stream.Collector
 
 
 data class userInfo (
@@ -25,18 +39,57 @@ data class userInfo (
     var password : String? = null
 )
 
+@Suppress("DEPRECATION")
 class SignUpActivity : AppCompatActivity() {
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("users")
+    private val storage : FirebaseStorage = Firebase.storage
+    private lateinit var imgDataUri : Uri
+    private lateinit var bitmap : Bitmap
+    private lateinit var getResultImage: ActivityResultLauncher<Intent>
+
+    private lateinit var signUpProfile : Uri
+    private lateinit var signUpNickname : String
+    private lateinit var signUpEmail : String
+    private lateinit var signUpBirth : String
+    private lateinit var signUpPw : String
+    private lateinit var signUpCheckPw : String
+
+    private val PERMISSION_Album = 101
+    private val REQUEST_STORAGE = 1000
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_signup)
 
+        val profileImgView = findViewById<ImageView>(R.id.profileImgView);
+        val selectProfileButton = findViewById<Button>(R.id.selectProfileButton);
+        selectProfileButton.setOnClickListener { //이미지버튼에 겔러리에 가서 사진 받아오기
+            loadImage()
+        }
+
+        getResultImage = registerForActivityResult( //갤러리에서 이미지를 가져오게 하기
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            if (result.resultCode == RESULT_OK) {
+                imgDataUri = result.data?.data!!
+
+                try {
+                    bitmap =
+                        MediaStore.Images.Media.getBitmap(this?.contentResolver, imgDataUri)
+                    profileImgView.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "$e", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+
         val signUpButton = findViewById<Button>(R.id.signUpButton)
         signUpButton.setOnClickListener {
 
+//            val signUpProfile = findViewById<ImageView>(R.id.profileImgView)
             val signUpNickname = findViewById<EditText>(R.id.signUpNickname).text.toString()
             val signUpEmail = findViewById<EditText>(R.id.signUpEmail).text.toString()
             val signUpBirth = findViewById<EditText>(R.id.signUpBirth).text.toString()
@@ -54,11 +107,34 @@ class SignUpActivity : AppCompatActivity() {
             else{
                 if(checkUserInfo(signUpNickname,signUpEmail, signUpBirth, signUpPw, signUpCheckPw)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
                     saveUserInfo(signUpNickname, signUpEmail, signUpBirth, signUpPw)
+//                    saveUserImg();
                     createAccount(signUpEmail, signUpPw)
                 }
             }
         }
     }
+
+    fun loadImage() {
+        var intent_image = Intent()
+        intent_image.type = "image/*"
+        intent_image.action = Intent.ACTION_GET_CONTENT
+        getResultImage.launch(intent_image)
+
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == RESULT_OK) {
+            data?.data?.let { uri ->
+                profileImgView.setImageURI(uri)
+                signUpProfile = uri
+            }
+
+        }
+    }
+
 
     //정규식 체크
     private fun checkUserInfo(nickname : String, email : String, birth : String, password : String, chekPassword : String) : Boolean{
@@ -86,30 +162,35 @@ class SignUpActivity : AppCompatActivity() {
             ).show();
             return false;
         }
-        else if(password != chekPassword){
+        else if(password != chekPassword) {
             Toast.makeText(
                 baseContext, "비밀번호가 다릅니다.",
                 Toast.LENGTH_SHORT
             ).show()
             return false;
         }
-        
         return true
     }
 
     private fun saveUserInfo(nickname : String, email : String, birth:String, password : String) {
         val userData = hashMapOf(
+            "profileImg" to imgDataUri,
             "nickname" to nickname,
             "email" to email,
             "birth" to birth,
             "password" to password
         )
 
+        //프로필 이미지 정보(uri) storage에 저장.
+        var storageRef = storage.reference
+        var postingImg = storageRef.child("image/profile" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+        var savePostingImg = postingImg.putFile(imgDataUri)
 
-        usersCollectionReference.add(userData)
+        usersCollectionReference.document(email).set(userData)
             .addOnSuccessListener {
-                Log.d("message", "success")
-            }.addOnFailureListener {}
+            Log.d("message", "success")
+        }.addOnFailureListener {}
+
 
     }
 
@@ -126,7 +207,7 @@ class SignUpActivity : AppCompatActivity() {
                         finish()
                     } else {
                         Toast.makeText(
-                            this, "Failed to Sign Up. Try Again!",
+                            this, "Already exist. Try Again!",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
