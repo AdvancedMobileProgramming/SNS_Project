@@ -15,14 +15,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentPostingBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -46,7 +50,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private var imageURL: String? = null
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
-    private val usersCollectionReference : CollectionReference = db.collection("users")
+    private val usersCollectionReference : CollectionReference = db.collection("post")
     private val storage : FirebaseStorage = Firebase.storage
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
     private lateinit var bitmap : Bitmap
@@ -126,7 +130,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                 "이미지 업로드중..",
                 Toast.LENGTH_SHORT
             ).show()
-
         }
 
         //사진 uri및 게시물 정보 저장
@@ -156,7 +159,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                 //finish() // 업로드가 성공한다면 이 화면을 종료하고 메인 페이지로 돌아감.
             }
             .addOnFailureListener {
-                Toast.makeText(
+                Toast.makeText (
                     context,
                     "포스트 업로드에 실패 하였습니다.\n${it.message}",
                     Toast.LENGTH_LONG
