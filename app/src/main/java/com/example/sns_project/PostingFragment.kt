@@ -88,7 +88,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
             }
             //HomeFragment 피드창으로 사진과 글이 넘어가는 코드 구현,, 못함 ㅠ
             this.uploadPost(
-                binding.editTextTextMultiLine.text.toString(),
+                binding.editTextTextMultiLine.text.toString()
             )
         }
 

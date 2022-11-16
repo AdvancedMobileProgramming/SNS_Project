@@ -10,6 +10,7 @@
     <!--갤러리 권한-->
     <uses-permission android:name="android.permission.CAMERA"/>
 
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
