@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.inflate
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -15,9 +16,9 @@ import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentFriendsBinding.inflate
 
 data class DataFriends(
-    var description: String,
+    var id: String,
     var profileImageURL: Drawable?,
-    var id: String
+    var description: String
 )
 
 class FriendsFragment: Fragment() { //친구리스트 조회
@@ -46,7 +47,6 @@ class FriendsFragment: Fragment() { //친구리스트 조회
         val adapter = FriendsListAdapter(friends)
         recyclerView.adapter = adapter
         recyclerView.setHasFixedSize(true)
-
 
         return binding.root
     }
