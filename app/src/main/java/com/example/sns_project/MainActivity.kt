@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() { //fragment 제어하는 메인
         appbarc = AppBarConfiguration(topDest, binding.drawerLayout)
         setupActionBarWithNavController(nhf.navController, appbarc)
         binding.navigationView.setupWithNavController(nhf.navController)
-
     }
     
     override fun onSupportNavigateUp(): Boolean {

@@ -1,56 +1,58 @@
 package com.example.sns_project
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.sns_project.R.drawable
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentFriendsBinding.inflate
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.fragment_friends.view.*
 
 data class DataFriends(
-    var name: String,
-    var profileImageURL: Int?,
+    var description: String,
+    var profileImageURL: Drawable?,
     var id: String
 )
 
 class FriendsFragment: Fragment() { //친구리스트 조회
-    private var binding : FragmentFriendsBinding?= null
-
+    private var mbinding : FragmentFriendsBinding?= null
+    private val binding get() = mbinding!!
 
     //뷰가 생성되었을 때
     //프래그먼트와 레이아웃을 연결시켜주는 부분
+    @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val recyclerView = binding!!.root.findViewById<RecyclerView>(R.id.friends_recycler)
-        binding = inflate(inflater, container, false)
-        val adapter = FriendsListAdapter()
 
-        //test
-        //val friends : ArrayList<DataFriends> = ArrayList()
-        //val item = DataFriends("jang", null, "sunho1234")  //Data class에 데이터 임의로 추가
-        //val item2 = DataFriends("dkgd", null, "djfdfgdgfg")
-        //friends.add(item)
-        //friends.add(item2)
-        //adapter.FriendList(friends)
-        //recyclerView.adapter = adapter
-        //recyclerView.setHasFixedSize(true)
+        mbinding = inflate(inflater, container, false)
+        val recyclerView = this.binding.root.findViewById<RecyclerView>(R.id.friends_recycler)
+        recyclerView.addItemDecoration(DividerItemDecoration(this.context, 1))
 
-        //
-        return binding!!.root
+        //test 데이터 직접 넣기
+        val friends : ArrayList<DataFriends> = ArrayList()
+        friends.add(DataFriends("jang",
+            context?.let { ContextCompat.getDrawable(it, drawable.logo) },"Hello"))
+        friends.add(DataFriends("dkgd", context?.let { ContextCompat.getDrawable(it, drawable.img) }, "djfdfgdgfg"))
+
+        val adapter = FriendsListAdapter(friends)
+        recyclerView.adapter = adapter
+        recyclerView.setHasFixedSize(true)
+
+
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mbinding = null
     }
 }
