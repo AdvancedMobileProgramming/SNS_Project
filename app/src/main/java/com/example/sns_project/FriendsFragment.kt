@@ -1,7 +1,6 @@
 package com.example.sns_project
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,27 +12,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentFriendsBinding
-import com.example.sns_project.databinding.FragmentPostingBinding
+import com.example.sns_project.databinding.FragmentFriendsBinding.inflate
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
-import com.google.firebase.database.ktx.database
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
+import kotlinx.android.synthetic.main.fragment_friends.view.*
 
 data class DataFriends(
     var name: String,
-    var profileImageURL: Int,
+    var profileImageURL: Int?,
     var id: String
 )
 
 class FriendsFragment: Fragment() { //친구리스트 조회
-    companion object {
-        fun newInstance() : FriendsFragment {
-            return FriendsFragment()
-        }
-    }
-    private lateinit var database: DatabaseReference
-    private var friends: MutableList<DataFriends> = mutableListOf()
+    private var binding : FragmentFriendsBinding?= null
+
 
     //뷰가 생성되었을 때
     //프래그먼트와 레이아웃을 연결시켜주는 부분
@@ -42,58 +36,21 @@ class FriendsFragment: Fragment() { //친구리스트 조회
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        database = Firebase.database.reference
-        val view = inflater.inflate(R.layout.fragment_friends, container, false)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.friends_recycler)
-        recyclerView.adapter = RecyclerViewAdapter()
+        val recyclerView = binding!!.root.findViewById<RecyclerView>(R.id.friends_recycler)
+        binding = inflate(inflater, container, false)
+        val adapter = FriendsListAdapter()
 
-        return view
-    }
+        //test
+        //val friends : ArrayList<DataFriends> = ArrayList()
+        //val item = DataFriends("jang", null, "sunho1234")  //Data class에 데이터 임의로 추가
+        //val item2 = DataFriends("dkgd", null, "djfdfgdgfg")
+        //friends.add(item)
+        //friends.add(item2)
+        //adapter.FriendList(friends)
+        //recyclerView.adapter = adapter
+        //recyclerView.setHasFixedSize(true)
 
-    //친구들의 정보들을 담아오는 부분
-    inner class RecyclerViewAdapter: RecyclerView.Adapter<RecyclerViewAdapter.CustomViewHolder>(){
-        init {
-            val myUid = Firebase.auth.currentUser?.uid.toString()
-            FirebaseDatabase.getInstance().reference.child("users").addValueEventListener(object : ValueEventListener {
-                override fun onCancelled(error: DatabaseError) {
-                }
-                @SuppressLint("NotifyDataSetChanged")
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    friends.clear()
-                    for (data in snapshot.children) {
-                        val item = data.getValue<DataFriends>()
-                        if (item?.id.equals(myUid)) { // 본인은 친구창에서 제외
-                            continue
-                        }
-                        friends.add(item!!)
-                    }
-                    notifyDataSetChanged()
-                }
-            })
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomViewHolder {
-            return CustomViewHolder(LayoutInflater.from(context).inflate(R.layout.fragment_friends, parent, false))
-        }
-
-        inner class CustomViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val imageView: ImageView = itemView.findViewById(R.id.imageView3)
-            val nametv : TextView = itemView.findViewById(R.id.textView4)
-            val idtv : TextView = itemView.findViewById(R.id.textView6)
-        }
-
-        //Glide를 이용해 프로필 띄우고, 이름과 아이디 구현
-        override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-            Glide.with(holder.itemView.context).load(friends[position].profileImageURL)
-                .circleCrop()
-                .into(holder.imageView)
-            holder.nametv.text = friends[position].name
-            holder.idtv.text = friends[position].id
-            }
-
-        override fun getItemCount(): Int {
-            return friends.size
-        }
-
+        //
+        return binding!!.root
     }
 }

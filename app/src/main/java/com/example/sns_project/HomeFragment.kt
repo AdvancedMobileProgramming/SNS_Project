@@ -50,6 +50,7 @@ class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,6 +59,9 @@ class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
 
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
         databaseRef = FirebaseDatabase.getInstance().reference
+
+        //mBinding!!.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
+        //}
 
         return binding.root
     }
