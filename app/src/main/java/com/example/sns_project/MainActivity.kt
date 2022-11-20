@@ -29,4 +29,6 @@ class MainActivity : AppCompatActivity() { //fragment 제어하는 메인
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.fragmentContainerView).navigateUp(appbarc) || super.onSupportNavigateUp()
     }
+
+
 }
