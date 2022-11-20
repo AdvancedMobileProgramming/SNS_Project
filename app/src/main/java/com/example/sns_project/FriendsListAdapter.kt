@@ -1,24 +1,13 @@
 package com.example.sns_project
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.content.ContextCompat
-import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat.getDrawable
-import com.example.sns_project.R.drawable
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.FriendsListAdapter.ViewHolder
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.getValue
-import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.friends_item.view.*
+import kotlin.collections.ArrayList
 
 class FriendsListAdapter(private var friends: ArrayList<DataFriends>) :
     RecyclerView.Adapter<ViewHolder>() {

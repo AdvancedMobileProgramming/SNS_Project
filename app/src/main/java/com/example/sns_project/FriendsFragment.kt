@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import android.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.R.drawable
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentFriendsBinding.inflate
-import kotlinx.android.synthetic.main.fragment_friends.*
 
 data class DataFriends(
     var id: String,
@@ -39,18 +37,18 @@ class FriendsFragment: Fragment() { //친구리스트 조회
 
         //입력창에서 입력할 때 발생할 이벤트
 
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-
-            //입력창에서 제출 버튼을 클릭했을 때
-            override fun onQueryTextSubmit(p0: String?): Boolean {
-                return true
-            }
-
-            //검색뷰에 입력한 텍스트가 변경될 때
-            override fun onQueryTextChange(p0: String?): Boolean {
-                return false
-            }
-        })
+        //searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//
+        //    //입력창에서 제출 버튼을 클릭했을 때
+        //    override fun onQueryTextSubmit(p0: String?): Boolean {
+        //        return true
+        //    }
+//
+        //    //검색뷰에 입력한 텍스트가 변경될 때
+        //    override fun onQueryTextChange(p0: String?): Boolean {
+        //        return false
+        //    }
+        //})
 
         //test 데이터 직접 넣기
         val friends : ArrayList<DataFriends> = ArrayList()

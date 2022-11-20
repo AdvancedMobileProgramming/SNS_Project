@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.home_item.view.*
 import java.util.*
 
 
@@ -70,8 +72,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
         initRecycler()
 
-        //mBinding!!.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
-        //}
+        binding.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
+            Toast.makeText(it.context, "Add friend" , Toast.LENGTH_SHORT).show()
+        }
 
         //view?.findViewById<RecyclerView>(R.id.imageView2)?.adapter = RecyclerViewAdapter()
 //        val mRecyclerView = binding.homeRecycler
@@ -84,6 +87,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private fun initRecycler() {
         homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext())
         binding.root.home_recycler.adapter = homeRecyclerAdapter
+
+        binding.root.home_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))
 
         db.collection("post")
             .get()
