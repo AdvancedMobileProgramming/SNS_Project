@@ -35,7 +35,6 @@ class FriendsListAdapter(private var friends: ArrayList<DataFriends>) :
     //데이터 목록 표시
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(listener: View.OnClickListener, friends: DataFriends) {
-            val image = itemView.imageView3.setImageDrawable(friends.profileImageURL)
             itemView.textView4.text = friends.id
             itemView.textView6.text = friends.description
             itemView.setOnClickListener(listener)
@@ -59,28 +58,5 @@ class FriendsListAdapter(private var friends: ArrayList<DataFriends>) :
     override fun getItemCount(): Int {
         return friends.size
     }
-
-    //친구들의 정보들을 담아오는 부분
-   //init {
-   //    val myUid = Firebase.auth.currentUser?.uid.toString()
-   //    FirebaseDatabase.getInstance().reference.child("users").addValueEventListener(object :
-   //        ValueEventListener {
-   //        override fun onCancelled(error: DatabaseError) {
-   //        }
-
-   //        @SuppressLint("NotifyDataSetChanged")
-   //        override fun onDataChange(snapshot: DataSnapshot) {
-   //            friends.clear()
-   //            for (data in snapshot.children) {
-   //                val item = data.getValue<DataFriends>()
-   //                if (item?.id.equals(myUid)) { // 본인은 친구창에서 제외
-   //                    continue
-   //                }
-   //                friends.add(item!!)
-   //            }
-   //            notifyDataSetChanged()
-   //        }
-   //    })
-   //
 }
 

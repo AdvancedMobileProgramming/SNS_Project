@@ -20,7 +20,7 @@
             app:srcCompat="@drawable/logo" />
 
         <LinearLayout
-            android:layout_width="244dp"
+            android:layout_width="298dp"
             android:layout_height="61dp"
             android:layout_gravity="top"
             android:orientation="vertical">
@@ -46,9 +46,8 @@
             android:id="@+id/button"
             android:layout_width="40dp"
             android:layout_height="50dp"
-
             android:drawableTop="@drawable/ic_baseline_add_24"
-            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+            tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
         <EditText
             android:id="@+id/editTextTextMultiLine2"

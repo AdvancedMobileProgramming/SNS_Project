@@ -60,7 +60,8 @@ class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
         databaseRef = FirebaseDatabase.getInstance().reference
 
-        //mBinding!!.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
+        //binding.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
+        //    binding.root.setBackgroundResource(R.drawable.ic_baseline_check_24)
         //}
 
         return binding.root
