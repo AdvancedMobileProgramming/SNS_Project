@@ -1,32 +1,33 @@
 package com.example.sns_project
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.CalendarContract.Attendees.query
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentHomeBinding
-import com.example.sns_project.databinding.FragmentPostingBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_home.view.*
 import java.util.*
+
 
 class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fragment_home
     /*companion object {
@@ -40,6 +41,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
     private lateinit var databaseRef: DatabaseReference
+
+    lateinit var homeRecyclerAdapter: HomeRecyclerAdapter
+    val posts = mutableListOf<PostDTO>()
 
     /* private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
         if(it.resultCode == Activity.RESULT_OK) {
@@ -60,75 +64,44 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.d("hihi", "home");
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
         databaseRef = FirebaseDatabase.getInstance().reference
+
+        initRecycler()
 
         //mBinding!!.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
         //}
 
         //view?.findViewById<RecyclerView>(R.id.imageView2)?.adapter = RecyclerViewAdapter()
+//        val mRecyclerView = binding.homeRecycler
+//        val mRecyclerAdapter = RecyclerViewAdapter()
+//        mRecyclerView.setLayoutManager(LinearLayoutManager(this.context))
 
         return binding.root
     }
 
+    private fun initRecycler() {
+        homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext())
+        binding.root.home_recycler.adapter = homeRecyclerAdapter
 
-
-    /*data class PostInfo (
-        var content: String? = null,
-        var creat_at: String? = null,
-        var image_uri: String? = null,
-        var user: String? = null
-    )*/
-
-    inner class RecyclerViewAdapter: RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
-
-        private var mpostInfo = arrayListOf<PostDTO>()
-        init {
-            val fireStore = FirebaseFirestore.getInstance()
-            val fire = FirebaseAuth.getInstance()
-            fireStore.collection("post").get().addOnSuccessListener { result ->
-                for (snapshot in result) {
-                    if (snapshot["user"].toString() == auth.uid) {
-                        Log.d("user Success", "user Success")
-                        mpostInfo.add(snapshot.toObject(PostDTO::class.java))
-                    }
+        db.collection("post")
+            .get()
+            .addOnSuccessListener { result ->
+                posts.clear()
+                homeRecyclerAdapter.posts.clear()
+                for (document in result) {
+                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
+//                    Log.d(TAG, "${document.id} => ${document.data}")
                 }
-                //binding.postCount.text = postInfo1.size.toString() + "개"
-                notifyDataSetChanged()
             }
-        }
+            .addOnFailureListener { exception ->
+                Log.w("error", "Error getting documents.", exception)
+            }
 
-        inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-            val profileImage = itemView.findViewById<ImageView>(R.id.imageView2)
-            val profileContents = itemView.findViewById<EditText>(R.id.editTextTextMultiLine2)
-            val profileCreate = itemView.findViewById<TextView>(R.id.textView3)
-            val profileUser = itemView.findViewById<TextView>(R.id.textView2)
-        }
+            homeRecyclerAdapter.posts = posts
+            homeRecyclerAdapter.notifyDataSetChanged()
 
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            Log.d("onCreateView", "INHOLDERcreate")
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_home, parent,false)
-            return MyViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            Log.d("viewHolder", "ViewHold")
-            Glide.with(holder.itemView.context) //firebase에서 사진 받아와서 피드에뜨게,,
-                .load(mpostInfo[position].image_uri)
-                .circleCrop()
-                .into(holder.profileImage)
-
-            //holder.profileContents.text = postInfo1[position].content
-            //Glide.with(holder.itemView.context).load(postInfo1.image_uri).into(holder.profileImage) //profileImage
-            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileContents) //작성한 글
-            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileCreate)
-            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileUser)
-        }
-
-        override fun getItemCount(): Int {
-            Log.d("COUNT", mpostInfo.size.toString())
-            return mpostInfo.size
         }
     }
-}
