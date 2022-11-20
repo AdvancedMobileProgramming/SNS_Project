@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.sns_project"
-        minSdk 28
+        minSdk 21
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -37,6 +37,13 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    buildFeatures {
+        viewBinding true
+    }
+    dataBinding {
+        enabled = true
+    }
+
 }
 
 dependencies {
@@ -52,7 +59,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
     implementation 'com.google.firebase:firebase-storage-ktx:20.1.0'
-    implementation 'com.android.car.ui:car-ui-lib:2.3.0'
+    implementation 'androidx.compose.foundation:foundation-layout:1.1.1'
     testImplementation 'org.junit.jupiter:junit-jupiter'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
     testImplementation 'junit:junit:4.13.2'
@@ -81,9 +88,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-storage:19.0.0'
     implementation 'com.google.firebase:firebase-storage-ktx'
 
-    //use glide
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    //use glide, recyclerview
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
 
 
 }
