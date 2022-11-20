@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.GridLayout
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
@@ -28,21 +25,27 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.home_item.view.*
+import java.text.SimpleDateFormat
+import java.util.*
 
-
-class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
-
-    val PERMISSION_Album = 101
-    val REQUEST_STORAGE = 1000
-
+class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fragment_home
+    /*companion object {
+        fun newInstance() : HomeFragment {
+            return HomeFragment()
+        }
+    } */
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
-    private val usersCollectionReference : CollectionReference = db.collection("users")
+    private val postCollectionReference : CollectionReference = db.collection("post")
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
     private lateinit var databaseRef: DatabaseReference
 
+    /* private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
+        if(it.resultCode == Activity.RESULT_OK) {
+            val imageUrl = it.data?.data
+        }
+    } */
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentHomeBinding? = null
@@ -50,7 +53,7 @@ class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
 
-
+    @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -63,67 +66,69 @@ class HomeFragment : Fragment() { //피드창, R.layout.fragment_home
         //mBinding!!.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
         //}
 
+        //view?.findViewById<RecyclerView>(R.id.imageView2)?.adapter = RecyclerViewAdapter()
+
         return binding.root
     }
 
-    /*inner class PostInfo {
-        var content: String? = null
-        var create_at: String? = null
-        var image_uri: String? = null
-        var user: String? = null
-    }*/
 
-    data class PostInfo(
+
+    /*data class PostInfo (
         var content: String? = null,
         var creat_at: String? = null,
         var image_uri: String? = null,
         var user: String? = null
-    )
+    )*/
 
-    inner class ProfileFragmentRecyclerAdapter: RecyclerView.Adapter<ProfileFragmentRecyclerAdapter.ViewHolder>() {
+    inner class RecyclerViewAdapter: RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder>() {
 
-        private var postInfo = arrayListOf<PostInfo>()
+        private var mpostInfo = arrayListOf<PostDTO>()
         init {
             val fireStore = FirebaseFirestore.getInstance()
-            fireStore.collection("posts").get().addOnSuccessListener { result ->
+            val fire = FirebaseAuth.getInstance()
+            fireStore.collection("post").get().addOnSuccessListener { result ->
                 for (snapshot in result) {
-                    if (snapshot["users"].toString() == auth.uid) {
-                        postInfo.add(snapshot.toObject(PostInfo::class.java))
+                    if (snapshot["user"].toString() == auth.uid) {
+                        Log.d("user Success", "user Success")
+                        mpostInfo.add(snapshot.toObject(PostDTO::class.java))
                     }
                 }
-
-                //binding.postCount.text = postInfo.size.toString() + "개"
+                //binding.postCount.text = postInfo1.size.toString() + "개"
                 notifyDataSetChanged()
             }
         }
 
-        //@SuppressLint("ResourceType")
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.home_item, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            //val width = resources.displayMetrics.widthPixels / 3
-            //holder.profileImage.layoutParams = LinearLayoutCompat.LayoutParams(width, width)
-            //binding.postCount.text = postInfo.size.toString() + "개"
-            Glide.with(holder.itemView.context).load(postInfo[position].image_uri).into(holder.profileImage) //profileImage
-            //Glide.with(holder.itemView.context).load(postInfo[position].content).into(holder.profileContents) //작성한 글
-            //Glide.with(holder.itemView.context).load(postInfo[position].create_at).into(holder.profileCreate)
-            //Glide.with(holder.itemView.context).load(postInfo[position].user).into(holder.profileUser)
-        }
-
-        inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+        inner class MyViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
             val profileImage = itemView.findViewById<ImageView>(R.id.imageView2)
-            var profileContents = itemView.findViewById<EditText>(R.id.editTextTextMultiLine2)
+            val profileContents = itemView.findViewById<EditText>(R.id.editTextTextMultiLine2)
             val profileCreate = itemView.findViewById<TextView>(R.id.textView3)
             val profileUser = itemView.findViewById<TextView>(R.id.textView2)
         }
 
-        override fun getItemCount(): Int { //피드개수 count할 메서드(안씀)
-            return postInfo.size
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+            Log.d("onCreateView", "INHOLDERcreate")
+            val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_home, parent,false)
+            return MyViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+            Log.d("viewHolder", "ViewHold")
+            Glide.with(holder.itemView.context) //firebase에서 사진 받아와서 피드에뜨게,,
+                .load(mpostInfo[position].image_uri)
+                .circleCrop()
+                .into(holder.profileImage)
+
+            //holder.profileContents.text = postInfo1[position].content
+            //Glide.with(holder.itemView.context).load(postInfo1.image_uri).into(holder.profileImage) //profileImage
+            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileContents) //작성한 글
+            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileCreate)
+            //Glide.with(holder.itemView.context).load(mpostInfo[position].content).into(holder.profileUser)
+        }
+
+        override fun getItemCount(): Int {
+            Log.d("COUNT", mpostInfo.size.toString())
+            return mpostInfo.size
         }
     }
 }
-
-
