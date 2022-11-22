@@ -11,13 +11,21 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/postingProfile"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="top"
             android:foregroundGravity="top|left"
             app:srcCompat="@drawable/logo" />
+
+<!--        <ImageView-->
+<!--            android:id="@+id/postingProfile"-->
+<!--            android:layout_width="60dp"-->
+<!--            android:layout_height="60dp"-->
+<!--            android:layout_gravity="top"-->
+<!--            android:foregroundGravity="top|left"-->
+<!--            app:srcCompat="@drawable/logo" />-->
 
         <LinearLayout
             android:layout_width="279dp"
@@ -49,6 +57,7 @@
             android:drawableTop="@drawable/ic_baseline_add_24"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
     </LinearLayout>
+
 
     <ImageView
         android:id="@+id/postingImgView"

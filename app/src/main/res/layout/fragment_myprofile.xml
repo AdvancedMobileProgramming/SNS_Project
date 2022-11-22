@@ -6,15 +6,28 @@
     android:layout_height="match_parent">
 
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileView"
         android:layout_width="173dp"
         android:layout_height="161dp"
+        android:layout_gravity="center"
         android:layout_marginTop="32dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/logo"
+        app:civ_border_overlay="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/profileView"-->
+<!--        android:layout_width="173dp"-->
+<!--        android:layout_height="161dp"-->
+<!--        android:layout_marginTop="32dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:srcCompat="@drawable/logo" />-->
 
     <TextView
         android:id="@+id/nicknameTextView"
@@ -40,8 +53,8 @@
 
     <TextView
         android:id="@+id/descriptionTextView"
-        android:layout_width="342dp"
-        android:layout_height="99dp"
+        android:layout_width="362dp"
+        android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:textAlignment="center"
         android:textSize="20sp"
@@ -50,8 +63,10 @@
         app:layout_constraintTop_toBottomOf="@+id/birthTextView" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="377dp"
-        android:layout_height="281dp"
+        android:id="@+id/profileRecycler"
+        android:layout_width="383dp"
+        android:layout_height="332dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

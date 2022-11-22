@@ -1,14 +1,12 @@
 package com.example.sns_project
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
+import android.util.Patterns
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
@@ -16,7 +14,6 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -24,10 +21,11 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.FirebaseStorageKtxRegistrar
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
-import java.net.URI
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 import java.util.regex.Pattern
 
@@ -105,7 +103,7 @@ class SignUpActivity : AppCompatActivity() {
             }
 
             else{
-                if(checkUserInfo(signUpNickname,signUpEmail, signUpBirth, signUpPw, signUpCheckPw)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
+                if(checkEmailInfo(signUpEmail) && checkUserInfo(signUpNickname) && checkBirthInfo(signUpBirth) && checkPasswordInfo(signUpPw, signUpCheckPw)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
                     saveUserInfo(signUpNickname, signUpEmail, signUpBirth, signUpPw)
 //                    saveUserImg();
                     createAccount(signUpEmail, signUpPw)
@@ -134,26 +132,69 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkEmailInfo(signUpEmail : String) : Boolean{
+        val pattern = Patterns.EMAIL_ADDRESS
+        var isCorrect : Boolean = true
+        CoroutineScope(Dispatchers.Default).launch {
+            db.collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        if(document.data["email"].toString().equals(signUpEmail)) isCorrect = false
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("error", "Error getting documents.", exception)
+                }
 
-    //정규식 체크
-    private fun checkUserInfo(nickname : String, email : String, birth : String, password : String, chekPassword : String) : Boolean{
-        val birthPattern = "^((19|20)\\d\\d)?([-/.])?(0[1-9]|1[012])([-/.])?(0[1-9]|[12][0-9]|3[01])$" //YYYYMMDD
-        val passwordPattern = """^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^+\-=])(?=\S+$).*$""" //숫자, 영어, 특수문자의 조합(하나 이상 포함), 공백 포함 불가
-        //중복된 사용자인가?
-        if(!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) { //이메일 정규식 확인
-            Toast.makeText(
-                baseContext,"올바른 이메일 형식이 아닙니다.",
-                Toast.LENGTH_SHORT
-            ).show();
-            return false;
+            if(!android.util.Patterns.EMAIL_ADDRESS.matcher(signUpEmail).matches()) { //이메일 정규식 확인
+                Toast.makeText(
+                    baseContext,"올바른 이메일 형식이 아닙니다.",
+                    Toast.LENGTH_SHORT
+                ).show();
+                isCorrect =  false;
+            }
         }
-        if(!Pattern.matches(birthPattern, birth)) { //생년월일 정규식 확인
+
+        return isCorrect;
+    }
+
+    private fun checkUserInfo(signUpNickname : String) : Boolean{
+        var isCorrect : Boolean = true
+        CoroutineScope(Dispatchers.Default).launch {
+            db.collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        if(document.data["nickname"].toString().equals(signUpNickname)) isCorrect = false
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("error", "Error getting documents.", exception)
+                }
+        }
+        return isCorrect;
+    }
+
+    private fun checkBirthInfo( signUpBirth : String) : Boolean{
+        val birthPattern = "^((19|20)\\d\\d)?([-/.])?(0[1-9]|1[012])([-/.])?(0[1-9]|[12][0-9]|3[01])$" //YYYYMMDD
+        //중복된 사용자인가?
+
+        if(!Pattern.matches(birthPattern, signUpBirth)) { //생년월일 정규식 확인
             Toast.makeText(
                 baseContext,"올바른 생년월일 입력 형식이 아닙니다.",
                 Toast.LENGTH_SHORT
             ).show();
             return false;
         }
+
+        return true
+    }
+
+    //정규식 체크
+    private fun checkPasswordInfo(password : String, chekPassword : String) : Boolean{
+        val passwordPattern = """^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^+\-=])(?=\S+$).*$""" //숫자, 영어, 특수문자의 조합(하나 이상 포함), 공백 포함 불가
+
         if(!Pattern.matches(passwordPattern, password)) {
             Toast.makeText(
                 baseContext,"최소 하나의 문자와 숫자를 포함한 8자 이상의 비밀번호가 필요합니다.",

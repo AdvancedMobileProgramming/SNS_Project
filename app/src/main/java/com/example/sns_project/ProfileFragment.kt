@@ -26,6 +26,7 @@ import androidx.core.content.PermissionChecker.checkSelfPermission
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import com.example.sns_project.databinding.FragmentProfileBinding
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -36,6 +37,11 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 import kotlin.math.log
 
@@ -104,22 +110,24 @@ class ProfileFragment: Fragment() { //프로필 수정창
         }
 
         binding.saveProfileButton.setOnClickListener {
+            var isCorrectUser : Boolean = true
+            var isCorrectBirth : Boolean = true
+
             val editUserName = binding.editUsername.text.toString()
             val editBirth = binding.editBirth.text.toString()
             val editDescription = binding.editDescription.text.toString()
 
-            if(editUserName == "" || editBirth == "" || editDescription == "" ){
-                Toast.makeText(
-                    context, "Please Fill the all blanks",
-                    Toast.LENGTH_SHORT
-                ).show()
+            if(editUserName != "" ){
+                isCorrectUser = checkUserInfo(editUserName)
+            }
+            if(editBirth != ""){
+                isCorrectBirth = checkBirthInfo(editBirth)
             }
 
-            else{
-                if(checkUserInfo(editUserName,editBirth, editDescription)){ //중복된 사용자정보인지, 올바른 형식으로 입력했는지 확인
-                    editUserInfo(editUserName, editBirth, editDescription)
-                }
+            if(isCorrectUser && isCorrectBirth) {
+                editUserInfo(editUserName, editBirth, editDescription)
             }
+
         }
 
         return binding.root
@@ -130,7 +138,6 @@ class ProfileFragment: Fragment() { //프로필 수정창
         intent_image.type = "image/*"
         intent_image.action = Intent.ACTION_GET_CONTENT
         getResultImage.launch(intent_image)
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -143,9 +150,26 @@ class ProfileFragment: Fragment() { //프로필 수정창
         }
     }
 
-    private fun checkUserInfo(editUsername : String, editBirth : String, editDescriptor: String) : Boolean{
+    //중복된 사용자인가?
+    private fun checkUserInfo(editUsername : String) : Boolean{
+        var isCorrect : Boolean = true
+        CoroutineScope(Dispatchers.Default).launch {
+            db.collection("users")
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        if(document.data["nickname"].toString().equals(editUsername)) isCorrect = false
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.w("error", "Error getting documents.", exception)
+                }
+        }
+        return isCorrect;
+    }
+
+    private fun checkBirthInfo( editBirth : String) : Boolean{
         val birthPattern = "^((19|20)\\d\\d)?([-/.])?(0[1-9]|1[012])([-/.])?(0[1-9]|[12][0-9]|3[01])$" //YYYYMMDD
-        val passwordPattern = """^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^+\-=])(?=\S+$).*$""" //숫자, 영어, 특수문자의 조합(하나 이상 포함), 공백 포함 불가
         //중복된 사용자인가?
 
         if(!Pattern.matches(birthPattern, editBirth)) { //생년월일 정규식 확인
@@ -158,6 +182,7 @@ class ProfileFragment: Fragment() { //프로필 수정창
 
         return true
     }
+
 
     private fun editUserInfo(editUsername : String, editBirth : String, editDescription: String) {
 //        val editUserData = hashMapOf(

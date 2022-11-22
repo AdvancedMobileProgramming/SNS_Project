@@ -5,12 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImgView"
         android:layout_width="150dp"
         android:layout_height="100dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/img"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/logo"
+        app:civ_border_overlay="true"
         app:layout_constraintBottom_toTopOf="@+id/selectProfileButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
