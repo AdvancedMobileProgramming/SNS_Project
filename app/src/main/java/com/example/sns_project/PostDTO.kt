@@ -8,5 +8,3 @@ data class PostDTO (
 //    val image_uri: String
 
 )
-
-
