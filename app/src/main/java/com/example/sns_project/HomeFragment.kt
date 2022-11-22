@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentHomeBinding
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
@@ -31,7 +32,9 @@ import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.typeOf
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fragment_home
@@ -91,23 +94,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  .addOnSuccessListener { result ->
                      posts.clear()
                      for (document in result) {
+                         Log.d("check!!!", "2 : ${document.data["created_at"]}")
+                         val timestamp = document.data["created_at"] as Timestamp
+
+                         val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+                         sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                         val time = sf.format(timestamp.toDate())
+
                          posts.add(
                              PostDTO(
                                  user = "${document.data["user"]}",
-                                 create_at = "${document.data["create_at"]}",
+                                 created_at = "${time.toString()}",
                                  content = "${document.data["content"]}"
                              )
                          )
+
 //                    Log.d(TAG, "${document.id} => ${document.data}")
                      }
-                     Log.d("check!!!", "2 : ${posts.size}")
+
                      homeRecyclerAdapter!!.posts = posts
                      homeRecyclerAdapter!!.notifyDataSetChanged()
                  }
                  .addOnFailureListener { exception ->
                      Log.w("error", "Error getting documents.", exception)
                  }
-             Log.d("check!!!", "3 : ${posts.size}")
 
 
          }

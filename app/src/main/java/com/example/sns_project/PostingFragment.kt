@@ -28,6 +28,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentPostingBinding
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.CollectionReference
@@ -54,7 +55,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private val storage : FirebaseStorage = Firebase.storage
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
     private lateinit var bitmap : Bitmap
-    private lateinit var imgDataUri : Uri
+    private var imgDataUri : Uri ?= null
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentPostingBinding? = null
@@ -134,15 +135,15 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         val data = hashMapOf(
             //"title" to title,
             "content" to content,
-            "user" to FirebaseAuth.getInstance().uid, // 현재 로그인 된 유저 정보를 업로드(?)
-            "created_at" to Date(),
+            "user" to auth.currentUser?.email.toString(), // 현재 로그인 된 유저 정보를 업로드(?)
+            "created_at" to Timestamp.now(),
             "image_uri" to imgDataUri
         )
 
         //게시물 이미지 정보(uri) storage에 저장.
         var storageRef = storage.reference
         var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
-        var savePostingImg = postingImg.putFile(imgDataUri)
+        var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
         Log.d("puuuuu", "${data}");
         db.collection("post")

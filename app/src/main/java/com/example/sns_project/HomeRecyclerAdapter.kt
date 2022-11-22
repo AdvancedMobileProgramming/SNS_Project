@@ -23,23 +23,23 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
     private var mbinding : FragmentHomeBinding?= null
     private val binding get() = mbinding!!
     var posts = mutableListOf<PostDTO>()
-
-    init {
-        Log.d("check!!!", "adapter init : ${posts.size}")
-        db.collection("post")
-            .get()
-            .addOnSuccessListener { result ->
-                posts.clear()
-                for (document in result) {
-                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
-//                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("error", "Error getting documents.", exception)
-            }
-
-    }
+//
+//    init {
+//        Log.d("check!!!", "adapter init : ${posts.size}")
+//        db.collection("post")
+//            .get()
+//            .addOnSuccessListener { result ->
+//                posts.clear()
+//                for (document in result) {
+//                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
+////                    Log.d(TAG, "${document.id} => ${document.data}")
+//                }
+//            }
+//            .addOnFailureListener { exception ->
+//                Log.w("error", "Error getting documents.", exception)
+//            }
+//
+//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         Log.d("check!!!", "adapter createViewHolder : ${posts.size}")
@@ -61,7 +61,7 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
 
         fun bind(item: PostDTO, context :Context) {
             user.text = item.user
-            create.text = item.create_at
+//            create.text = item.create_at
             content.text = item.content
         }
     }
