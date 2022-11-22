@@ -28,6 +28,9 @@ import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.home_item.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -44,8 +47,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
     private lateinit var databaseRef: DatabaseReference
 
-    lateinit var homeRecyclerAdapter: HomeRecyclerAdapter
-    val posts = mutableListOf<PostDTO>()
+    var homeRecyclerAdapter: HomeRecyclerAdapter ?= null
+    var posts = mutableListOf<PostDTO>()
 
     /* private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
         if(it.resultCode == Activity.RESULT_OK) {
@@ -66,47 +69,47 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.d("hihi", "home");
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
         databaseRef = FirebaseDatabase.getInstance().reference
 
+
         initRecycler()
+        Log.d("check!!!", "1 : ${posts.size}")
 
-        binding.root.button.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
-            Toast.makeText(it.context, "Add friend" , Toast.LENGTH_SHORT).show()
-        }
-
-        //view?.findViewById<RecyclerView>(R.id.imageView2)?.adapter = RecyclerViewAdapter()
-//        val mRecyclerView = binding.homeRecycler
-//        val mRecyclerAdapter = RecyclerViewAdapter()
-//        mRecyclerView.setLayoutManager(LinearLayoutManager(this.context))
-
-        return binding.root
-    }
-
-    private fun initRecycler() {
-        homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext())
+        homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext(), posts)
         binding.root.home_recycler.adapter = homeRecyclerAdapter
 
         binding.root.home_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))
 
-        db.collection("post")
-            .get()
-            .addOnSuccessListener { result ->
-                posts.clear()
-                homeRecyclerAdapter.posts.clear()
-                for (document in result) {
-                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
-//                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-            }
-            .addOnFailureListener { exception ->
-                Log.w("error", "Error getting documents.", exception)
-            }
-
-            homeRecyclerAdapter.posts = posts
-            homeRecyclerAdapter.notifyDataSetChanged()
-
-
-        }
+        return binding.root
     }
+
+     private fun initRecycler() {
+         CoroutineScope(Dispatchers.Default).launch {
+             db.collection("post")
+                 .get()
+                 .addOnSuccessListener { result ->
+                     posts.clear()
+                     for (document in result) {
+                         posts.add(
+                             PostDTO(
+                                 user = "${document.data["user"]}",
+                                 create_at = "${document.data["create_at"]}",
+                                 content = "${document.data["content"]}"
+                             )
+                         )
+//                    Log.d(TAG, "${document.id} => ${document.data}")
+                     }
+                     Log.d("check!!!", "2 : ${posts.size}")
+                     homeRecyclerAdapter!!.posts = posts
+                     homeRecyclerAdapter!!.notifyDataSetChanged()
+                 }
+                 .addOnFailureListener { exception ->
+                     Log.w("error", "Error getting documents.", exception)
+                 }
+             Log.d("check!!!", "3 : ${posts.size}")
+
+
+         }
+     }
+}
