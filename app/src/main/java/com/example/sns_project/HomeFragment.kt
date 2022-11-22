@@ -54,8 +54,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private val postCollectionReference: CollectionReference = db.collection("post")
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
-
-
     private lateinit var imgDataUri : Uri
     private lateinit var bitmap : Bitmap
 

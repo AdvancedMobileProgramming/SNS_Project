@@ -81,10 +81,17 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 
         binding.postingButton.setOnClickListener {
             val editTextTextMultiLine = binding.editTextTextMultiLine.text.toString()
+            val imageButton = binding.imageButton
 
             if(editTextTextMultiLine == "") { //포스팅란에 빈칸 입력시
                 Toast.makeText(
                     context, "Please Fill the all blanks",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            else if(imageButton == null) { //코드 추가하기
+                Toast.makeText(
+                    context, "이미지를 삽입하세요",
                     Toast.LENGTH_SHORT
                 ).show()
             }
