@@ -132,7 +132,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         if(binding.imageButton.drawable != null && this.imageURL == null) { //바꿔야함
             Toast.makeText(
                 context,
-                "이미지 업로드중..",
+                "게시물 업로드중..",
                 Toast.LENGTH_SHORT
             ).show()
         }
