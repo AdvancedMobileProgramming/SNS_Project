@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -31,7 +32,9 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
             .addOnSuccessListener { result ->
                 posts.clear()
                 for (document in result) {
-                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
+                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}",
+                        content="${document.data["content"]}", image_uri = "${document.data["image_uri"]}"
+                    ))
 //                    Log.d(TAG, "${document.id} => ${document.data}")
                 }
             }
@@ -58,11 +61,14 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
         private val user: TextView = itemView.idView
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
+        private val image: ImageView = itemView.imageView5
+
 
         fun bind(item: PostDTO, context :Context) {
             user.text = item.user
             create.text = item.create_at
             content.text = item.content
+            //image.setImageBitmap() = item.image_uri
         }
     }
 }

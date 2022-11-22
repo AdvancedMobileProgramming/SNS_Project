@@ -2,6 +2,8 @@ package com.example.sns_project
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.CalendarContract.Attendees.query
 import android.util.Log
@@ -26,6 +28,9 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
 import kotlinx.android.synthetic.main.home_item.view.*
@@ -46,7 +51,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private val postCollectionReference: CollectionReference = db.collection("post")
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
+    private lateinit var imgDataUri : Uri
+    private lateinit var bitmap : Bitmap
+
     private lateinit var databaseRef: DatabaseReference
+    private val storage: FirebaseStorage = Firebase.storage
+    private val storageRef : StorageReference = storage.getReference()
 
     lateinit var homeRecyclerAdapter: HomeRecyclerAdapter
     val posts = mutableListOf<PostDTO>()
@@ -88,6 +98,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         return binding.root
     }
 
+    var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+    var savePostingImg = postingImg.putFile(imgDataUri) //image_uri를 가져오게 하기
     private fun initRecycler() {
         CoroutineScope(Dispatchers.Default).launch {
             db.collection("post")
@@ -99,7 +111,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                             PostDTO(
                                 user = "${document.data["user"]}",
                                 create_at = "${document.data["create_at"]}",
-                                content = "${document.data["content"]}"
+                                content = "${document.data["content"]}",
+                                image_uri = "${document.data["image_uri"]}"
                             )
                         )
 //                    Log.d(TAG, "${document.id} => ${document.data}")
@@ -132,6 +145,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                 .addOnFailureListener() {
                     Toast.makeText(context, "Add Friend Failure", Toast.LENGTH_SHORT).show()
                 }
+            }
         }
     }
-}

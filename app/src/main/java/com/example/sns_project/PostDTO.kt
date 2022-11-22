@@ -4,7 +4,7 @@ package com.example.sns_project
 data class PostDTO (
     val user: String,
     val create_at: String,
-    val content: String
-//    val image_uri: String
+    val content: String,
+    val image_uri: String
 
 )
