@@ -92,7 +92,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         databaseRef = FirebaseDatabase.getInstance().reference
 
         initRecycler()
-        Log.d("check!!!", "1 : ${posts.size}")
 
         homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext(), posts)
         binding.root.home_recycler.adapter = homeRecyclerAdapter
@@ -104,8 +103,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         return binding.root
     }
 
-//    var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
-//    var savePostingImg = postingImg.putFile(imgDataUri) //image_uri를 가져오게 하기
      private fun initRecycler() {
          CoroutineScope(Dispatchers.Default).launch {
              db.collection("post")
@@ -113,34 +110,45 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  .addOnSuccessListener { result ->
                      posts.clear()
                      for (document in result) {
-                         Log.d("check!!!", "2 : ${document.data["created_at"]}")
                          val timestamp = document.data["created_at"] as Timestamp
 
                          val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
                          sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
                          val time = sf.format(timestamp.toDate())
 
-                         val profileRef =storageRef.child("image/profile/${document.data["user"]}.jpg")
-
-                         Log.d("time!!!", timestamp.toDate().toString())
-                         var postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
-
-                         posts.add(
-                             PostDTO(
-                                 profile = profileRef,
-                                 user = "${document.data["user"]}",
-                                 created_at = "${time.toString()}",
-                                 content = "${document.data["content"]}",
-                                 image_uri = postingImg
+                         if(document.data["image_uri"]==null){
+                             posts.add(
+                                 PostDTO(
+                                     user = "${document.data["user"]}",
+                                     created_at = "${time.toString()}",
+                                     content = "${document.data["content"]}",
+                                 )
                              )
-                         )
+                         }
+
+                         else{
+                             val profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
+
+                             var postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+
+                             posts.add(
+                                 PostDTO(
+                                     profile = profileRef,
+                                     user = "${document.data["user"]}",
+                                     created_at = "${time.toString()}",
+                                     content = "${document.data["content"]}",
+                                     image_uri = postingImg
+                                 )
+                             )
+                         }
                      }
 
                      homeRecyclerAdapter!!.posts = posts
                      homeRecyclerAdapter!!.notifyDataSetChanged()
                  }
                  .addOnFailureListener { exception ->
-                     Log.w("error", "Error getting documents.", exception)
+                     Log.d("error", "error")
+                     Log.d("error", "error")
                  }
          }
      }

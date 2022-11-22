@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImgView"
         android:layout_width="150dp"
         android:layout_height="100dp"
@@ -17,6 +17,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@drawable/logo" />
+
+<!--    <ImageView-->
+<!--        android:id="@+id/profileImgView"-->
+<!--        android:layout_width="150dp"-->
+<!--        android:layout_height="100dp"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:layout_marginBottom="32dp"-->
+<!--        android:src="@drawable/img"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/signUpNickname"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        tools:srcCompat="@drawable/logo" />-->
 
     <Button
         android:id="@+id/selectProfileButton"

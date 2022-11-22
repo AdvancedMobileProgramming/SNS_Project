@@ -53,7 +53,7 @@ class ProfileFragment: Fragment() { //프로필 수정창
     private val storage: FirebaseStorage = Firebase.storage
     private val storageRef : StorageReference = storage.getReference()
     val currentUserEmail = auth.currentUser?.email.toString()
-    private lateinit var imgDataUri : Uri
+    private var imgDataUri : Uri ?= null
     private lateinit var bitmap : Bitmap
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
@@ -191,12 +191,15 @@ class ProfileFragment: Fragment() { //프로필 수정창
 //            "birth" to editBirth
 //        )
 
-        var storageRef = storage.reference
-        var postingImg = storageRef.child("image/profile/${currentUserEmail}.jpg")
-        postingImg.delete()
-        var savePostingImg = postingImg.putFile(imgDataUri)
+        if(imgDataUri != null){
+            var storageRef = storage.reference
+            var postingImg = storageRef.child("image/profile/${currentUserEmail}.jpg")
+            postingImg.delete()
+            var savePostingImg = postingImg.putFile(imgDataUri!!)
 
-        usersCollectionReference.document(currentUserEmail).update("profileImg", postingImg.toString())
+            usersCollectionReference.document(currentUserEmail).update("profileImg", postingImg.toString())
+        }
+
         usersCollectionReference.document(currentUserEmail).update("nickname", editUsername)
         usersCollectionReference.document(currentUserEmail).update("birth", editBirth)
         usersCollectionReference.document(currentUserEmail).update("description", editDescription)

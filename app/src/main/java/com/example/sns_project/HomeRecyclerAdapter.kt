@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
+import kotlinx.android.synthetic.main.activity_signin.view.*
 import kotlinx.android.synthetic.main.home_item.view.*
 
 
@@ -22,26 +23,8 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
     private var mbinding : FragmentHomeBinding?= null
     private val binding get() = mbinding!!
     var posts = mutableListOf<PostDTO>()
-//
-//    init {
-//        Log.d("check!!!", "adapter init : ${posts.size}")
-//        db.collection("post")
-//            .get()
-//            .addOnSuccessListener { result ->
-//                posts.clear()
-//                for (document in result) {
-//                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
-////                    Log.d(TAG, "${document.id} => ${document.data}")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("error", "Error getting documents.", exception)
-//            }
-//
-//    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d("check!!!", "adapter createViewHolder : ${posts.size}")
         val view = LayoutInflater.from(parent.context).inflate(com.example.sns_project.R.layout.home_item, parent, false)
         return ViewHolder(view)
     }
@@ -49,12 +32,11 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
     override fun getItemCount(): Int = posts.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        Log.d("check!!!", "adapter bind : ${posts.size}")
         holder.bind(posts[position], context)
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val profileImg : ImageView = itemView.postingProfile
+            private val profileImg : ImageView = itemView.postingProfile
         private val user: TextView = itemView.idView
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
@@ -62,8 +44,18 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
 
 
         fun bind(item: PostDTO, context :Context) {
-            displayImageRef(item.profile, profileImg)
-            displayImageRef(item.image_uri, image)
+            if(item.profile == null){
+                itemView.postingProfile.visibility = View.GONE
+            }else{
+                displayImageRef(item.profile, profileImg)
+            }
+
+            if(item.image_uri == null){
+                itemView.postingImgView.visibility = View.GONE
+            }else{
+                displayImageRef(item.image_uri, image)
+            }
+
 
             user.text = item.user
             create.text = item.created_at
@@ -75,7 +67,6 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
                 val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
                 view.setImageBitmap(bmp)
             }?.addOnFailureListener {
-// Failed to download the image
             }
         }
     }

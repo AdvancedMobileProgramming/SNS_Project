@@ -67,7 +67,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
         if(it.resultCode == Activity.RESULT_OK) {
             val imageUrl = it.data?.data
-
         }
     }
 
@@ -77,7 +76,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         savedInstanceState: Bundle?
     ): View? {
         mBinding = FragmentPostingBinding.inflate(inflater, container, false)
-
 
         binding.postingButton.setOnClickListener {
             val editTextTextMultiLine = binding.editTextTextMultiLine.text.toString()
