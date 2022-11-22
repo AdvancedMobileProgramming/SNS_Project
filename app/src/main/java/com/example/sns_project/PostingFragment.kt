@@ -24,7 +24,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.findNavController
+import androidx.navigation.ui.navigateUp
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentPostingBinding
@@ -44,9 +48,6 @@ import java.util.*
 
 
 class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_posting
-
-    val PERMISSION_Album = 101
-    val REQUEST_STORAGE = 1000
 
     private var imageURL: String? = null
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
@@ -135,6 +136,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                 "게시물 업로드중..",
                 Toast.LENGTH_SHORT
             ).show()
+//            mainActivity.fragmentChange(2);
         }
 
         //사진 uri및 게시물 정보 저장
@@ -172,4 +174,6 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                     .show()
             }
     }
+
+
 }

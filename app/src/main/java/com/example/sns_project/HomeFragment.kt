@@ -117,8 +117,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                          val time = sf.format(timestamp.toDate())
 
                          if(document.data["image_uri"]==null){
+                             val profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
+
                              posts.add(
                                  PostDTO(
+                                     profile = profileRef,
                                      user = "${document.data["user"]}",
                                      created_at = "${time.toString()}",
                                      content = "${document.data["content"]}",
@@ -143,6 +146,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                          }
                      }
 
+                     posts.sortByDescending{it.created_at}
                      homeRecyclerAdapter!!.posts = posts
                      homeRecyclerAdapter!!.notifyDataSetChanged()
                  }

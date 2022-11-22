@@ -21,23 +21,7 @@ class ProfileRecyclerAdapter(private val context: Context, val post: MutableList
     private var mbinding : FragmentMyprofileBinding?= null
     private val binding get() = mbinding!!
     var posts = mutableListOf<PostDTO>()
-//
-//    init {
-//        Log.d("check!!!", "adapter init : ${posts.size}")
-//        db.collection("post")
-//            .get()
-//            .addOnSuccessListener { result ->
-//                posts.clear()
-//                for (document in result) {
-//                    posts.add(PostDTO(user = "${document.data["user"]}", create_at = "${document.data["create_at"]}", content="${document.data["content"]}"))
-////                    Log.d(TAG, "${document.id} => ${document.data}")
-//                }
-//            }
-//            .addOnFailureListener { exception ->
-//                Log.w("error", "Error getting documents.", exception)
-//            }
-//
-//    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(com.example.sns_project.R.layout.home_item, parent, false)
