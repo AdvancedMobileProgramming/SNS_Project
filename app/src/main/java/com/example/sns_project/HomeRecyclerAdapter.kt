@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -58,11 +59,14 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
         private val user: TextView = itemView.idView
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
+        private val image: ImageView = itemView.imageView5
+
 
         fun bind(item: PostDTO, context :Context) {
             user.text = item.user
-//            create.text = item.create_at
+            create.text = item.created_at
             content.text = item.content
+            //image.setImageBitmap() = item.image_uri
         }
     }
 }

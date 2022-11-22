@@ -20,7 +20,7 @@
             app:srcCompat="@drawable/logo" />
 
         <LinearLayout
-            android:layout_width="298dp"
+            android:layout_width="279dp"
             android:layout_height="61dp"
             android:layout_gravity="top"
             android:orientation="vertical">
@@ -43,7 +43,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/addfriendbtn"
             android:layout_width="40dp"
             android:layout_height="50dp"
             android:drawableTop="@drawable/ic_baseline_add_24"
