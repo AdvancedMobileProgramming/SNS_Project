@@ -56,6 +56,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
     private lateinit var bitmap : Bitmap
     private var imgDataUri : Uri ?= null
+    val currentUserEmail = auth.currentUser?.email.toString()
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentPostingBinding? = null
@@ -142,7 +143,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 
         //게시물 이미지 정보(uri) storage에 저장.
         var storageRef = storage.reference
-        var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+        var postingImg = storageRef.child("image/posting/${currentUserEmail}${Date()}.jpg")
         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
         Log.d("puuuuu", "${data}");

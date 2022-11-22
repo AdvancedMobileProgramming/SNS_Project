@@ -54,12 +54,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private val postCollectionReference: CollectionReference = db.collection("post")
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
 
+
+
     private lateinit var imgDataUri : Uri
     private lateinit var bitmap : Bitmap
 
     private lateinit var databaseRef: DatabaseReference
     private val storage: FirebaseStorage = Firebase.storage
     private val storageRef : StorageReference = storage.getReference()
+    val currentUserEmail = auth.currentUser?.email.toString()
 
     lateinit var homeRecyclerAdapter: HomeRecyclerAdapter
     val posts = mutableListOf<PostDTO>()
@@ -103,6 +106,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
         return binding.root
     }
 
+//    var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
+//    var savePostingImg = postingImg.putFile(imgDataUri) //image_uri를 가져오게 하기
      private fun initRecycler() {
          CoroutineScope(Dispatchers.Default).launch {
              db.collection("post")
@@ -117,32 +122,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                          sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
                          val time = sf.format(timestamp.toDate())
 
+                         val profileRef =storageRef.child("image/profile/${document.data["user"]}.jpg")
+
+                         Log.d("time!!!", timestamp.toDate().toString())
+                         var postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+
                          posts.add(
                              PostDTO(
+                                 profile = profileRef,
                                  user = "${document.data["user"]}",
                                  created_at = "${time.toString()}",
-                                 content = "${document.data["content"]}"
+                                 content = "${document.data["content"]}",
+                                 image_uri = postingImg
                              )
                          )
-
-    var postingImg = storageRef.child("image/posting" + "${FirebaseAuth.getInstance().uid}" + "${Date()}")
-    var savePostingImg = postingImg.putFile(imgDataUri) //image_uri를 가져오게 하기
-    private fun initRecycler() {
-        CoroutineScope(Dispatchers.Default).launch {
-            db.collection("post")
-                .get()
-                .addOnSuccessListener { result ->
-                    posts.clear()
-                    for (document in result) {
-                        posts.add(
-                            PostDTO(
-                                user = "${document.data["user"]}",
-                                created_at = "${document.data["create_at"]}",
-                                content = "${document.data["content"]}",
-                                image_uri = "${document.data["image_uri"]}"
-                            )
-                        )
-//                    Log.d(TAG, "${document.id} => ${document.data}")
                      }
 
                      homeRecyclerAdapter!!.posts = posts
@@ -151,14 +144,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  .addOnFailureListener { exception ->
                      Log.w("error", "Error getting documents.", exception)
                  }
-                    }
-                    Log.d("check!!!", "2 : ${posts.size}")
-                    homeRecyclerAdapter!!.posts = posts
-                    homeRecyclerAdapter!!.notifyDataSetChanged()
-                }
-            Log.d("check!!!", "3 : ${posts.size}")
-        }
-    }
+         }
+     }
 
 
     private fun FriendAdd() {

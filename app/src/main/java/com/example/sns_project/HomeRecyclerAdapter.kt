@@ -1,21 +1,19 @@
 package com.example.sns_project
 
-import android.R
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.home_item.view.*
 
 
@@ -56,17 +54,29 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val profileImg : ImageView = itemView.postingProfile
         private val user: TextView = itemView.idView
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
-        private val image: ImageView = itemView.imageView5
+        private val image: ImageView = itemView.postingImgView
 
 
         fun bind(item: PostDTO, context :Context) {
+            displayImageRef(item.profile, profileImg)
+            displayImageRef(item.image_uri, image)
+
             user.text = item.user
             create.text = item.created_at
             content.text = item.content
-            //image.setImageBitmap() = item.image_uri
+        }
+
+        fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
+            imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener {
+                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+                view.setImageBitmap(bmp)
+            }?.addOnFailureListener {
+// Failed to download the image
+            }
         }
     }
 }
