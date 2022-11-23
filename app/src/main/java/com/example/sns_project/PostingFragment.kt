@@ -40,10 +40,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.activity_signup.*
 import kotlinx.android.synthetic.main.fragment_posting.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.net.URI
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -54,10 +59,14 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
     private val db : FirebaseFirestore = Firebase.firestore
     private val usersCollectionReference : CollectionReference = db.collection("post")
     private val storage : FirebaseStorage = Firebase.storage
+    private val storageRef : StorageReference = storage.getReference()
     private lateinit var getResultImage: ActivityResultLauncher<Intent>
     private lateinit var bitmap : Bitmap
     private var imgDataUri : Uri ?= null
     val currentUserEmail = auth.currentUser?.email.toString()
+    var currentUserNickname : String = ""
+
+
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentPostingBinding? = null
@@ -139,40 +148,52 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 //            mainActivity.fragmentChange(2);
         }
 
-        //사진 uri및 게시물 정보 저장
-        val data = hashMapOf(
-            //"title" to title,
-            "content" to content,
-            "user" to auth.currentUser?.email.toString(), // 현재 로그인 된 유저 정보를 업로드(?)
-            "created_at" to Timestamp.now(),
-            "image_uri" to imgDataUri
-        )
 
-        //게시물 이미지 정보(uri) storage에 저장.
-        var storageRef = storage.reference
-        var postingImg = storageRef.child("image/posting/${currentUserEmail}${Date()}.jpg")
-        var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
+        db.collection("users")
+            .get()
+            .addOnSuccessListener { result ->
+                for (document in result) {
+                    if(document.data["email"].toString() == currentUserEmail){
+                        //사진 uri및 게시물 정보 저장
+                        val data = hashMapOf(
+                            //"title" to title,
+                            "content" to content,
+                            "user" to auth.currentUser?.email.toString(), // 현재 로그인 된 유저 정보를 업로드(?)
+                            "nickname" to document.data["nickname"].toString(),
+                            "created_at" to Timestamp.now(),
+                            "image_uri" to imgDataUri
+                        )
 
-        Log.d("puuuuu", "${data}");
-        db.collection("post")
-            .add(data)
-            .addOnCompleteListener {
-                Toast.makeText(
-                    context,
-                    "업로드 완료!",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-                //finish() // 업로드가 성공한다면 이 화면을 종료하고 메인 페이지로 돌아감.
+                        //게시물 이미지 정보(uri) storage에 저장.
+                        var storageRef = storage.reference
+                        var postingImg = storageRef.child("image/posting/${currentUserEmail}${Date()}.jpg")
+                        var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
+
+                        db.collection("post")
+                            .add(data)
+                            .addOnCompleteListener {
+                                Toast.makeText(
+                                    context,
+                                    "업로드 완료!",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                //finish() // 업로드가 성공한다면 이 화면을 종료하고 메인 페이지로 돌아감.
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText (
+                                    context,
+                                    "포스트 업로드에 실패 하였습니다.\n${it.message}",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                            }
+                    }
+                }
             }
-            .addOnFailureListener {
-                Toast.makeText (
-                    context,
-                    "포스트 업로드에 실패 하였습니다.\n${it.message}",
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-            }
+
+
+
     }
 
 
