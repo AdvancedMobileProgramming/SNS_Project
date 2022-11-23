@@ -112,22 +112,52 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
                 .addOnSuccessListener { result ->
                     posts.clear()
                     for (document in result) {
-                        if(document.data["user"].toString().equals(currentUserEmail)){
-                            val timestamp = document.data["created_at"] as Timestamp
+                        val timestamp = document.data["created_at"] as Timestamp
 
-                            val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
-                            sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-                            val time = sf.format(timestamp.toDate())
+                        val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+                        sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+                        val time = sf.format(timestamp.toDate())
 
-                            val profileRef =storageRef.child("image/profile/${document.data["user"]}.jpg")
+                        var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
+                        var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
 
-                            Log.d("time!!!", timestamp.toDate().toString())
-                            var postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+                        if (document.data["user"].toString().equals(currentUserEmail)) {
+//                            if (document.data["image_uri"] == null) {
+//                                val profileRef =
+//                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
+//
+//                                posts.add(
+//                                    PostDTO(
+//                                        profile = profileRef,
+//                                        user = "${document.data["nickname"]}",
+//                                        created_at = "${time.toString()}",
+//                                        content = "${document.data["content"]}",
+//                                    )
+//                                )
+//                            } else {
+//                                val profileRef =
+//                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
+//
+//                                var postingImg =
+//                                    storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+//
+//                                posts.add(
+//                                    PostDTO(
+//                                        profile = profileRef,
+//                                        user = "${document.data["nickname"]}",
+//                                        created_at = "${time.toString()}",
+//                                        content = "${document.data["content"]}",
+//                                        image_uri = postingImg
+//                                    )
+//                                )
+//                            }
+                            profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
+                            postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
 
                             posts.add(
                                 PostDTO(
                                     profile = profileRef,
-                                    user = "${document.data["user"]}",
+                                    user = "${document.data["nickname"]}",
                                     created_at = "${time.toString()}",
                                     content = "${document.data["content"]}",
                                     image_uri = postingImg
@@ -136,12 +166,15 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
                         }
 
                     }
+                    posts.sortByDescending { it.created_at }
                     profileRecyclerAdapter!!.posts = posts
                     profileRecyclerAdapter!!.notifyDataSetChanged()
                 }
                 .addOnFailureListener { exception ->
                     Log.w("error", "Error getting documents.", exception)
                 }
+
+
         }
     }
 

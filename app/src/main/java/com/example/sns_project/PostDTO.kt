@@ -1,5 +1,6 @@
 package com.example.sns_project
 
+import android.graphics.Bitmap
 import com.google.firebase.firestore.ServerTimestamp
 import com.google.firebase.storage.StorageReference
 import java.sql.Timestamp
@@ -11,7 +12,8 @@ data class PostDTO (
     val user: String,
     val created_at: String,
     val content: String,
-    val image_uri: StorageReference ?= null
+//    val image_uri: Bitmap?= null
+    val image_uri: StorageReference?= null
 
 )
 

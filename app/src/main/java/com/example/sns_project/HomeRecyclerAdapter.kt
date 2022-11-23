@@ -1,6 +1,7 @@
 package com.example.sns_project
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.databinding.HomeItemBinding
 import com.google.firebase.auth.ktx.auth
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.example.sns_project.databinding.FragmentHomeBinding
+import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -21,7 +26,6 @@ import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
 
 class HomeRecyclerAdapter(private val context: Context, val post: MutableList<PostDTO>) : RecyclerView.Adapter<HomeRecyclerAdapter.ViewHolder>() {
     private val db : FirebaseFirestore = Firebase.firestore
@@ -72,10 +76,8 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) { //imageView 클릭시 좋아요, 댓글 이벤트 추가하기
         holder.bind(posts[position], context)
+
     }
-
-
-
 
     inner class ViewHolder(private val binding : HomeItemBinding) : RecyclerView.ViewHolder(binding.root) {
         private val profileImg : ImageView = itemView.postingProfile
@@ -86,30 +88,39 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
 
 
         fun bind(item: PostDTO, context :Context) {
-            if(item.profile == null){
-                itemView.postingProfile.visibility = View.GONE
-            }else{
-                displayImageRef(item.profile, profileImg)
-            }
 
-            if(item.image_uri == null){
-                itemView.postingImgView.visibility = View.GONE
-            }else{
-                displayImageRef(item.image_uri, image)
-            }
+            displayImageRef(item.profile, profileImg)
 
+                if (item.image_uri == null) {
+                    itemView.postingImgView.visibility = View.GONE
+                } else {
+                    CoroutineScope(Dispatchers.Default).launch {
+                        displayImageRef(item.image_uri, image)
+                    }
+                }
 
-            user.text = item.user
-            create.text = item.created_at
-            content.text = item.content
+                user.text = item.user
+                create.text = item.created_at
+                content.text = item.content
         }
 
-        fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
-            imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener {
-                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-                view.setImageBitmap(bmp)
-            }?.addOnFailureListener {
+        private fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
+            imageRef!!.downloadUrl.addOnSuccessListener { uri ->
+                Glide.with(view.context)
+                    .load(uri)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .centerCrop()
+                    .into(view)
             }
+//            imageRef?.getBytes(Long.MAX_VALUE)?.addOnSuccessListener{
+//                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+//                view.setImageBitmap(bmp)
+//            }?.addOnFailureListener {
+//            }
+        }
+
+        private fun displayPostingImageRef(bmp : Bitmap?, view: ImageView) {
+            view.setImageBitmap(bmp)
         }
     }
 }

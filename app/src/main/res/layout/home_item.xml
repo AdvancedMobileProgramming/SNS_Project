@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
@@ -52,23 +52,33 @@
                 android:textSize="18sp"/>
         </LinearLayout>
 
-
         <Button
             android:id="@+id/addfriendbtn"
             android:layout_width="40dp"
             android:layout_height="50dp"
             android:drawableTop="@drawable/ic_baseline_add_24"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
-
     </LinearLayout>
 
 
-        <ImageView
-            android:id="@+id/postingImgView"
-            android:layout_width="match_parent"
-            android:layout_height="340dp"
-            app:srcCompat="@drawable/logo" />
+    <ImageView
+        android:id="@+id/postingImgView"
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        app:srcCompat="@drawable/logo" />
 
+
+    <TextView
+        android:id="@+id/contentView"
+        android:layout_width="410dp"
+        android:layout_height="89dp"
+        android:layout_gravity="left"
+        android:padding="20dp"
+        android:layout_marginBottom="10dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="content"
+        android:textSize="30sp"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -88,18 +98,5 @@
             android:layout_height="match_parent"
             app:srcCompat="@drawable/ic_chat_black" />
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/contentView"
-        android:layout_width="410dp"
-        android:layout_height="89dp"
-        android:layout_gravity="left"
-        android:layout_marginBottom="10dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="content"
-        android:padding="20dp"
-        android:textSize="30sp" />
-
 
 </LinearLayout>
