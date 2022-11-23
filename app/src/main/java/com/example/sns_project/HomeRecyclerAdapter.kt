@@ -39,6 +39,18 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
         val binding = HomeItemBinding.inflate(view, parent, false)
         val Usernickname = Firebase.auth.currentUser?.uid.toString()
 
+        binding.imageView2.setOnClickListener {
+            Log.d("add", "clicked!")
+            var isDefault = true
+
+            isDefault=!isDefault
+            if(isDefault)
+                binding.imageView2.setImageResource(R.drawable.favorite_click)
+            else
+                binding.imageView2.setImageResource(R.drawable.favorite_border)
+
+        }
+
 
         binding.addfriendbtn.setOnClickListener {
 
