@@ -41,13 +41,16 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
         binding.imageView2.setOnClickListener {
             Log.d("add", "clicked!")
-            var isDefault = true
+
+            binding.imageView2.setImageResource(R.drawable.favorite_click)
+
+            /*var isDefault = true
 
             isDefault=!isDefault
             if(isDefault)
                 binding.imageView2.setImageResource(R.drawable.favorite_click)
             else
-                binding.imageView2.setImageResource(R.drawable.favorite_border)
+                binding.imageView2.setImageResource(R.drawable.favorite_border)*/
 
         }
 
