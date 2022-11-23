@@ -28,6 +28,8 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.home_item.*
+import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,7 +68,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
     // 바인딩 객체 타입에 ?를 붙여서 null을 허용 해줘야한다. ( onDestroy 될 때 완벽하게 제거를 하기위해 )
     private var mBinding: FragmentHomeBinding? = null
-    private var iBinding: HomeItemBinding? = null
+    private var iBinding: HomeItemBinding ?= null
 
     // 매번 null 체크를 할 필요 없이 편의성을 위해 바인딩 변수 재 선언
     private val binding get() = mBinding!!
@@ -80,7 +82,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     ): View? {
 
         mBinding = FragmentHomeBinding.inflate(inflater, container, false)
-        iBinding = HomeItemBinding.inflate(inflater, container, false)
+
         databaseRef = FirebaseDatabase.getInstance().reference
 
         initRecycler()
@@ -90,11 +92,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
         binding.root.home_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))
 
-        val id = ibinding.idView.toString()
-        FriendAdd(id)
-
         return binding.root
     }
+
 
      private fun initRecycler() {
          CoroutineScope(Dispatchers.Default).launch {
@@ -148,23 +148,4 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  }
          }
      }
-
-
-    private fun FriendAdd(id: String) {
-        ibinding.addfriendbtn.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
-
-            val friendID = hashMapOf(
-                "user" to id
-            )
-
-            db.collection("friend").document(id)
-                .set(friendID)
-                .addOnSuccessListener {
-                    Log.d("friend", "Add Success")
-                }
-                .addOnFailureListener() {
-                    Log.d("friend", "Add Failure")
-                }
-            }
-        }
-    }
+}

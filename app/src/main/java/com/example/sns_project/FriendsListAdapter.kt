@@ -27,13 +27,16 @@ class FriendsListAdapter(private var context: Context) :
     //데이터 목록 표시
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val user: TextView = itemView.textView4
+        private val descriptioin: TextView = itemView.description
 
         fun bind(item: DataFriends) {
-            user.text = item.id
+            user.text = item.nickname
+            descriptioin.text = item.description
 
-            /*user.setOnClickListener {
-                Toast.makeText(it.context, "ID : ${item.id}", Toast.LENGTH_SHORT).show()
-            }*/
+            itemView.setOnClickListener {
+                Toast.makeText(it.context, "Nickname : ${item.nickname}, Description : ${item.description}"
+                    , Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

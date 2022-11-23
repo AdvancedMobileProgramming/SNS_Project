@@ -1,5 +1,6 @@
 package com.example.sns_project
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -18,14 +19,15 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_friends.view.*
+import kotlinx.android.synthetic.main.fragment_myprofile.*
 import kotlinx.android.synthetic.main.friends_item.*
+import kotlinx.android.synthetic.main.home_item.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 조회
     private var mbinding: FragmentFriendsBinding? = null
-    private val ibinding: FriendsItemBinding? = null
     private val binding get() = mbinding!!
 
     private val db: FirebaseFirestore = Firebase.firestore
@@ -51,6 +53,7 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initFriendRecycler() {
         friendsListAdapter = FriendsListAdapter(this.requireContext())
         binding.root.friends_recycler.adapter = friendsListAdapter
@@ -65,12 +68,13 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
                     datafriends.clear()
                     friendsListAdapter.datafriends.clear()
                     for (document in result) {
-                        datafriends.add(
-                            DataFriends(id = "${document.data["user"]}")
-                        )
+                            datafriends.add(
+                                DataFriends(nickname = "${document.data["user"]}",
+                                    description = "${document.data["description"]}")
+                            )
                     }
-                    friendsListAdapter!!.notifyDataSetChanged()
-                    friendsListAdapter!!.datafriends = datafriends
+                    friendsListAdapter.notifyDataSetChanged()
+                    friendsListAdapter.datafriends = datafriends
                 }
                 .addOnFailureListener { exception ->
                     Log.w("error", "Error getting documents", exception)

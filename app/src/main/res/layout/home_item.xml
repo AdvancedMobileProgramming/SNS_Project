@@ -52,12 +52,14 @@
                 android:textSize="18sp"/>
         </LinearLayout>
 
+
         <Button
             android:id="@+id/addfriendbtn"
             android:layout_width="40dp"
             android:layout_height="50dp"
             android:drawableTop="@drawable/ic_baseline_add_24"
             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
     </LinearLayout>
 
 

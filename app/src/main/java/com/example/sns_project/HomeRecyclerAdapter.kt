@@ -8,25 +8,64 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.sns_project.databinding.FragmentHomeBinding
+import com.example.sns_project.databinding.HomeItemBinding
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
-import kotlinx.android.synthetic.main.activity_signin.view.*
+import kotlinx.android.synthetic.main.home_item.*
 import kotlinx.android.synthetic.main.home_item.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class HomeRecyclerAdapter(private val context: Context, val post: MutableList<PostDTO>) : RecyclerView.Adapter<HomeRecyclerAdapter.ViewHolder>() {
     private val db : FirebaseFirestore = Firebase.firestore
-    private var mbinding : FragmentHomeBinding?= null
-    private val binding get() = mbinding!!
     var posts = mutableListOf<PostDTO>()
+    private val mbinding : HomeItemBinding?= null
+    private val binding get() = mbinding!!
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(com.example.sns_project.R.layout.home_item, parent, false)
-        return ViewHolder(view)
+        val view = LayoutInflater.from(parent.context)
+        val binding = HomeItemBinding.inflate(view, parent, false)
+        val Usernickname = Firebase.auth.currentUser?.uid.toString()
+
+
+        binding.addfriendbtn.setOnClickListener {
+
+            Log.d("add", "buttonClick")
+            CoroutineScope(Dispatchers.Default).launch {
+                db.collection("users")
+                    .get()
+                    .addOnFailureListener {
+                    }
+                    .addOnSuccessListener { result ->
+                        for (document in result) {
+                            val friendID = hashMapOf(
+                                "user" to document.data["nickname"].toString(),
+                                "description" to document.data["description"].toString()
+                            )
+                            if(document.data["nickname"].toString().equals(binding.idView.text.toString()))
+                                continue
+                            else {
+                                db.collection("friend")
+                                    .add(friendID)
+                                    .addOnSuccessListener {
+                                        Log.d("friend", "Add Success")
+                                    }
+                                    .addOnFailureListener() {
+                                        Log.d("friend", "Add Failure")
+                                    }
+                            }
+                        }
+                    }
+            }
+        }
+        return ViewHolder(binding)
     }
 
     override fun getItemCount(): Int = posts.size
@@ -35,8 +74,11 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
         holder.bind(posts[position], context)
     }
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-            private val profileImg : ImageView = itemView.postingProfile
+
+
+
+    inner class ViewHolder(private val binding : HomeItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val profileImg : ImageView = itemView.postingProfile
         private val user: TextView = itemView.idView
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
