@@ -31,7 +31,7 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
 
     override fun getItemCount(): Int = posts.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) { //imageView 클릭시 좋아요, 댓글 이벤트 추가하기
         holder.bind(posts[position], context)
     }
 
