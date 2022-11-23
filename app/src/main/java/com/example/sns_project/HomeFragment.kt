@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.CalendarContract.Attendees.query
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,9 @@ import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.firebase.Timestamp
 import com.example.sns_project.databinding.HomeItemBinding
@@ -20,6 +24,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -27,12 +32,15 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
+import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_home.view.*
+import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.reflect.typeOf
 
 
 class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fragment_home
@@ -90,8 +98,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
         binding.root.home_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))
 
-        val id = ibinding.idView.toString()
-        FriendAdd(id)
+        FriendAdd()
 
         return binding.root
     }
@@ -145,25 +152,27 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  }
                  .addOnFailureListener { exception ->
                      Log.d("error", "error")
+                     Log.d("error", "error")
                  }
          }
      }
 
 
-    private fun FriendAdd(id: String) {
+    private fun FriendAdd() {
         ibinding.addfriendbtn.setOnClickListener {  //친구 추가 버튼 클릭할 시 친구 목록에 보이게
+            val id = ibinding.idView.text
 
             val friendID = hashMapOf(
-                "user" to id
+                "user" to id.toString()
             )
 
-            db.collection("friend").document(id)
+            db.collection("friend").document("user")
                 .set(friendID)
                 .addOnSuccessListener {
-                    Log.d("friend", "Add Success")
+                    Toast.makeText(context, "Add Friend Succeed", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener() {
-                    Log.d("friend", "Add Failure")
+                    Toast.makeText(context, "Add Friend Failure", Toast.LENGTH_SHORT).show()
                 }
             }
         }
