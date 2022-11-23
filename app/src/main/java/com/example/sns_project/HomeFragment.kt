@@ -115,7 +115,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                              posts.add(
                                  PostDTO(
                                      profile = profileRef,
-                                     user = "${document.data["nickname"]}",
+                                     user = "${document.data["user"]}",
                                      created_at = "${time.toString()}",
                                      content = "${document.data["content"]}",
                                  )
