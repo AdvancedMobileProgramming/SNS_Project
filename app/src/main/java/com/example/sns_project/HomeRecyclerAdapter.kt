@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.databinding.HomeItemBinding
 import com.google.firebase.auth.ktx.auth
@@ -27,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class HomeRecyclerAdapter(private val context: Context, val post: MutableList<PostDTO>) : RecyclerView.Adapter<HomeRecyclerAdapter.ViewHolder>() {
+class HomeRecyclerAdapter(private val context: Context, val postList: MutableList<PostDTO>) : RecyclerView.Adapter<HomeRecyclerAdapter.ViewHolder>() {
     private val db : FirebaseFirestore = Firebase.firestore
     var posts = mutableListOf<PostDTO>()
     private val mbinding : HomeItemBinding?= null
@@ -75,7 +76,7 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
     override fun getItemCount(): Int = posts.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) { //imageView 클릭시 좋아요, 댓글 이벤트 추가하기
-        holder.bind(posts[position], context)
+        holder.bind(posts[position])
 
     }
 
@@ -87,8 +88,8 @@ class HomeRecyclerAdapter(private val context: Context, val post: MutableList<Po
         private val image: ImageView = itemView.postingImgView
 
 
-        fun bind(item: PostDTO, context :Context) {
-
+        fun bind(item: PostDTO) {
+            Log.d("hello???", "success");
             displayImageRef(item.profile, profileImg)
 
                 if (item.image_uri == null) {

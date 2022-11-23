@@ -91,7 +91,7 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
             .addOnSuccessListener {
                 nicknameTextView.text = it["nickname"].toString()
                 birthTextView.text = it["birth"].toString()
-                if (it["description"].toString() === null) descriptionTextView.text = "소개글이 없습니다."
+                if (it["description"] == null) descriptionTextView.text = "소개글이 없습니다."
                 else descriptionTextView.text = it["description"].toString()
             }
 
@@ -121,39 +121,27 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
                         var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
                         var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
 
-                        if (document.data["user"].toString().equals(currentUserEmail)) {
-//                            if (document.data["image_uri"] == null) {
-//                                val profileRef =
-//                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
-//
-//                                posts.add(
-//                                    PostDTO(
-//                                        profile = profileRef,
-//                                        user = "${document.data["nickname"]}",
-//                                        created_at = "${time.toString()}",
-//                                        content = "${document.data["content"]}",
-//                                    )
-//                                )
-//                            } else {
-//                                val profileRef =
-//                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
-//
-//                                var postingImg =
-//                                    storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
-//
-//                                posts.add(
-//                                    PostDTO(
-//                                        profile = profileRef,
-//                                        user = "${document.data["nickname"]}",
-//                                        created_at = "${time.toString()}",
-//                                        content = "${document.data["content"]}",
-//                                        image_uri = postingImg
-//                                    )
-//                                )
-//                            }
-                            profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
-                            postingImg = storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+                        if (document.data["image_uri"] == null) {
+                            profileRef =
+                                storageRef.child("image/profile/${document.data["user"]}.jpg")
 
+                            posts.add(
+                                PostDTO(
+                                    profile = profileRef,
+                                    user = "${document.data["nickname"]}",
+                                    created_at = "${time.toString()}",
+                                    content = "${document.data["content"]}",
+                                )
+                            )
+                        } else {
+                            profileRef =
+                                storageRef.child("image/profile/${document.data["user"]}.jpg")
+
+                            postingImg =
+                                storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+
+                            Log.d("hihi", "user ::: ${document.data["user"]}")
+                            Log.d("hihi", "time ::: ${timestamp.toDate()}")
                             posts.add(
                                 PostDTO(
                                     profile = profileRef,
@@ -164,7 +152,6 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
                                 )
                             )
                         }
-
                     }
                     posts.sortByDescending { it.created_at }
                     profileRecyclerAdapter!!.posts = posts

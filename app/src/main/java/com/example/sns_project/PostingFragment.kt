@@ -4,6 +4,7 @@ import android.Manifest
 import android.R
 import android.app.Activity
 import android.app.Activity.RESULT_OK
+import android.app.FragmentTransaction
 import android.app.Instrumentation
 import android.content.Intent
 import android.graphics.Bitmap
@@ -54,6 +55,8 @@ import java.util.*
 
 class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_posting
 
+    var mainActivity : MainActivity? = null
+
     private var imageURL: String? = null
     private val auth : FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db : FirebaseFirestore = Firebase.firestore
@@ -85,6 +88,8 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        mainActivity = context as MainActivity
+
         mBinding = FragmentPostingBinding.inflate(inflater, container, false)
 
         binding.postingButton.setOnClickListener {
@@ -128,6 +133,13 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                 }
             }
         }
+
+//        var transaction : FragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+//        Fragment2 fragment2 = new Fragment2();
+//        transaction.replace(R.id.frameLayout, fragment2);
+//        transaction.commit();
+
+
         return binding.root
     }
 
