@@ -78,32 +78,3 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
         }
     }
 }
-
-
-/*private fun initRecycler() {
-    CoroutineScope(Dispatchers.Default).launch {
-        db.collection("post")
-            .get()
-            .addOnSuccessListener { result ->
-                posts.clear()
-                for (document in result) {
-                    posts.add(
-                        PostDTO(
-                            user = "${document.data["user"]}",
-                            create_at = "${document.data["create_at"]}",
-                            content = "${document.data["content"]}",
-                            image_uri = "${document.data["image_uri"]}"
-                        )
-                    )
-//                    Log.d(TAG, "${document.id} => ${document.data}")
-                }
-                Log.d("check!!!", "2 : ${posts.size}")
-                homeRecyclerAdapter!!.posts = posts
-                homeRecyclerAdapter!!.notifyDataSetChanged()
-            }
-            .addOnFailureListener { exception ->
-                Log.w("error", "Error getting documents.", exception)
-            }
-        Log.d("check!!!", "3 : ${posts.size}")
-    }
-}*/

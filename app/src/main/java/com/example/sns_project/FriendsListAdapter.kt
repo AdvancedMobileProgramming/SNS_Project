@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import kotlinx.android.synthetic.main.friends_item.view.*
@@ -28,7 +29,11 @@ class FriendsListAdapter(private var context: Context) :
         private val user: TextView = itemView.textView4
 
         fun bind(item: DataFriends) {
-                user.text = item.id
+            user.text = item.id
+
+            /*user.setOnClickListener {
+                Toast.makeText(it.context, "ID : ${item.id}", Toast.LENGTH_SHORT).show()
+            }*/
         }
     }
 
