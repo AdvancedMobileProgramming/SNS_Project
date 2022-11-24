@@ -3,6 +3,7 @@ package com.example.sns_project
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,11 +35,11 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
     var posts = mutableListOf<PostDTO>()
     private val mbinding : HomeItemBinding?= null
     private val binding get() = mbinding!!
+    private val auth : FirebaseAuth = Firebase.auth
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = HomeItemBinding.inflate(view, parent, false)
-        val Usernickname = Firebase.auth.currentUser?.uid.toString()
 
 
         var isDefault = true
@@ -56,35 +58,41 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
 
         binding.addfriendbtn.setOnClickListener {
-
             Log.d("add", "buttonClick")
+
             CoroutineScope(Dispatchers.Default).launch {
-                db.collection("users")
-                    .get()
-                    .addOnFailureListener {
-                    }
-                    .addOnSuccessListener { result ->
-                        for (document in result) {
-                            val friendID = hashMapOf(
-                                "user" to document.data["nickname"].toString(),
-                                "description" to document.data["description"].toString()
-                            )
-                            if(document.data["nickname"].toString().equals(binding.idView.text.toString()))
-                                continue
-                            else {
-                                db.collection("friend")
-                                    .add(friendID)
-                                    .addOnSuccessListener {
-                                        Log.d("friend", "Add Success")
-                                    }
-                                    .addOnFailureListener() {
-                                        Log.d("friend", "Add Failure")
-                                    }
+                    db.collection("users")
+                        .get()
+                        .addOnSuccessListener { result ->
+                            for (document in result) {
+                                val friendID = hashMapOf(
+                                    "profile" to document.data["profileImg"].toString(),
+                                    "user" to document.data["email"].toString(),
+                                    "nickname" to document.data["nickname"].toString()
+                                )
+
+                                // friend 컬렉션의 nickname과 "users"의 nickname이 같으면 데이터 추가 X -> 구현해야함
+
+                                if (document.data["nickname"].toString()
+                                        .equals(binding.idView.text.toString()))
+                                {
+                                    Toast.makeText(context, "친구 추가 중", Toast.LENGTH_SHORT)
+                                        .show()
+                                    db.collection("friend")
+                                        .add(friendID)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(context, "친구 추가 완료", Toast.LENGTH_SHORT).show()
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(context, "친구 추가 실패", Toast.LENGTH_SHORT).show()
+                                        }
+                                }
+
+
                             }
                         }
-                    }
+                }
             }
-        }
         return ViewHolder(binding)
     }
 
@@ -104,9 +112,8 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
 
         fun bind(item: PostDTO) {
-            Log.d("hello???", "success");
+            Log.d("hello???", "success")
             displayImageRef(item.profile, profileImg)
-
                 if (item.image_uri == null) {
                     itemView.postingImgView.visibility = View.GONE
                 } else {
@@ -140,3 +147,4 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
         }
     }
 }
+
