@@ -3,6 +3,7 @@ package com.example.sns_project
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +21,7 @@ import com.example.sns_project.databinding.FragmentHomeBinding
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import kotlinx.android.synthetic.main.home_item.*
@@ -41,17 +43,24 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
 
         var isDefault = true
+        var imageCount = 0
         binding.imageView2.setOnClickListener {
             Log.d("add", "clicked!")
 
             //binding.imageView2.setImageResource(R.drawable.favorite_click)
 
             isDefault=!isDefault
-            if(isDefault)
+            if(isDefault) {
                 binding.imageView2.setImageResource(R.drawable.favorite_click)
-            else
-                binding.imageView2.setImageResource(R.drawable.favorite_border)
+                binding.TextView6.text = "like: " + imageCount
+                imageCount--
+            }
 
+            else {
+                binding.imageView2.setImageResource(R.drawable.favorite_border)
+                binding.TextView6.text = "like: " + imageCount
+                imageCount++
+            }
         }
 
 
@@ -90,9 +99,12 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
     override fun getItemCount(): Int = posts.size
 
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) { //imageView 클릭시 좋아요, 댓글 이벤트 추가하기
         holder.bind(posts[position])
-
+        /*holder.itemView.imageView2.setOnClickListener {
+            favoriteEvent(position)
+        }*/
     }
 
     inner class ViewHolder(private val binding : HomeItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -101,7 +113,8 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
         private val create: TextView = itemView.createView
         private val content: TextView = itemView.contentView
         private val image: ImageView = itemView.postingImgView
-
+        //private val favorite: ImageView = itemView.imageView2 //좋아요 imageView
+        val likeText: TextView = itemView.TextView6
 
         fun bind(item: PostDTO) {
             Log.d("hello???", "success");
@@ -139,4 +152,18 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
             view.setImageBitmap(bmp)
         }
     }
+    /*private fun favoriteEvent(position: Int) {
+        val tsDoc = db.collection("post").document(posts[position].toString())
+        //val favoriteCount = 0
+        db.runTransaction {transition ->
+            val mpostDTO = transition.get(tsDoc).toObject(PostDTO::class.java)
+
+            if(mpostDTO!!.favorite.containsKey(user)) {
+
+            }
+        }
+    }*/
 }
+
+
+
