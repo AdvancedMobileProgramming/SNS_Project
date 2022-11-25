@@ -10,7 +10,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sns_project.databinding.HomeItemBinding
 import com.google.firebase.auth.ktx.auth
@@ -27,6 +30,8 @@ import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class HomeRecyclerAdapter(private val context: Context, val postList: MutableList<PostDTO>) : RecyclerView.Adapter<HomeRecyclerAdapter.ViewHolder>() {
     private val db : FirebaseFirestore = Firebase.firestore
@@ -56,7 +61,6 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
 
 
         binding.addfriendbtn.setOnClickListener {
-
             Log.d("add", "buttonClick")
             CoroutineScope(Dispatchers.Default).launch {
                 db.collection("users")
@@ -85,6 +89,7 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
                     }
             }
         }
+
         return ViewHolder(binding)
     }
 
@@ -115,9 +120,20 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
                     }
                 }
 
-                user.text = item.user
-                create.text = item.created_at
-                content.text = item.content
+            val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+             sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+             val time = sf.format(item.created_at)
+
+            user.text = item.user
+            create.text = time
+            content.text = item.content
+
+            binding.imageView4.setOnClickListener{
+                lateinit var navController: NavController
+                navController = Navigation.findNavController(binding.root)
+                val bundle = bundleOf("time" to item.created_at.toString())
+                navController.navigate(com.example.sns_project.R.id.action_homeFragment_to_commentFragment, bundle)
+            }
         }
 
         private fun displayImageRef(imageRef: StorageReference?, view: ImageView) {

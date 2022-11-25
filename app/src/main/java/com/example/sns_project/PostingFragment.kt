@@ -24,9 +24,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.navigateUp
@@ -49,6 +52,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.net.URI
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -160,6 +164,11 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 //            mainActivity.fragmentChange(2);
         }
 
+        var timestamp = Timestamp.now()
+//        val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+//        sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+//        val time = sf.format(timestamp.toDate())
+        val time = timestamp.toDate()
 
         db.collection("users")
             .get()
@@ -172,7 +181,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                             "content" to content,
                             "user" to auth.currentUser?.email.toString(), // 현재 로그인 된 유저 정보를 업로드(?)
                             "nickname" to document.data["nickname"].toString(),
-                            "created_at" to Timestamp.now(),
+                            "created_at" to time,
                             "image_uri" to imgDataUri
                         )
 
@@ -181,8 +190,9 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                         var postingImg = storageRef.child("image/posting/${currentUserEmail}${Date()}.jpg")
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
-                        db.collection("post")
-                            .add(data)
+
+                        db.collection("post").document("${currentUserEmail}${time}")
+                            .set(data)
                             .addOnCompleteListener {
                                 Toast.makeText(
                                     context,

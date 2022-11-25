@@ -97,17 +97,19 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
 
      private fun initRecycler() {
+
          CoroutineScope(Dispatchers.Default).launch {
              db.collection("post")
                  .get()
                  .addOnSuccessListener { result ->
                      posts.clear()
                      for (document in result) {
-                         val timestamp = document.data["created_at"] as Timestamp
+                         val timestamp = document.data["created_at"] as com.google.firebase.Timestamp
 
-                         val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
-                         sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-                         val time = sf.format(timestamp.toDate())
+//                         val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+//                         sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+//                         val time = sf.format(timestamp.toDate())
+                            val time = timestamp.toDate()
 
                         var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
                         var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
@@ -120,7 +122,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                                  PostDTO(
                                      profile = profileRef,
                                      user = "${document.data["nickname"]}",
-                                     created_at = "${time.toString()}",
+                                     created_at = time,
                                      content = "${document.data["content"]}",
                                  )
                              )
@@ -131,13 +133,11 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                              postingImg =
                                  storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
 
-                             Log.d("hihi", "user ::: ${document.data["user"]}")
-                             Log.d("hihi", "time ::: ${timestamp.toDate()}")
                              posts.add(
                                  PostDTO(
                                      profile = profileRef,
                                      user = "${document.data["nickname"]}",
-                                     created_at = "${time.toString()}",
+                                     created_at = time,
                                      content = "${document.data["content"]}",
                                      image_uri = postingImg
                                  )

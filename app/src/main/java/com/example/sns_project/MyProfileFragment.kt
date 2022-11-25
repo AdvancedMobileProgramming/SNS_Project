@@ -112,57 +112,60 @@ class MyProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프로�
                 .addOnSuccessListener { result ->
                     posts.clear()
                     for (document in result) {
-                        val timestamp = document.data["created_at"] as Timestamp
+                        if (document.data["user"].toString().equals(currentUserEmail)) {
+                            val timestamp = document.data["created_at"] as Timestamp
 
-                        val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
-                        sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-                        val time = sf.format(timestamp.toDate())
+//                            val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+//                            sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+//                            val time = sf.format(timestamp.toDate())
+                            val time = timestamp.toDate()
 
-                        var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
-                        var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
+                            var profileRef: StorageReference =
+                                storageRef.child("image/defaultImg.png");
+                            var postingImg: StorageReference =
+                                storageRef.child("image/defaultImg.png");
 
-                        if (document.data["image_uri"] == null) {
-                            profileRef =
-                                storageRef.child("image/profile/${document.data["user"]}.jpg")
+                            if (document.data["image_uri"] == null) {
+                                profileRef =
+                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
 
-                            posts.add(
-                                PostDTO(
-                                    profile = profileRef,
-                                    user = "${document.data["nickname"]}",
-                                    created_at = "${time.toString()}",
-                                    content = "${document.data["content"]}",
+                                posts.add(
+                                    PostDTO(
+                                        profile = profileRef,
+                                        user = "${document.data["nickname"]}",
+                                        created_at = time,
+                                        content = "${document.data["content"]}",
+                                    )
                                 )
-                            )
-                        } else {
-                            profileRef =
-                                storageRef.child("image/profile/${document.data["user"]}.jpg")
+                            } else {
+                                profileRef =
+                                    storageRef.child("image/profile/${document.data["user"]}.jpg")
 
-                            postingImg =
-                                storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+                                postingImg =
+                                    storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
 
-                            Log.d("hihi", "user ::: ${document.data["user"]}")
-                            Log.d("hihi", "time ::: ${timestamp.toDate()}")
-                            posts.add(
-                                PostDTO(
-                                    profile = profileRef,
-                                    user = "${document.data["nickname"]}",
-                                    created_at = "${time.toString()}",
-                                    content = "${document.data["content"]}",
-                                    image_uri = postingImg
+                                Log.d("hihi", "user ::: ${document.data["user"]}")
+                                Log.d("hihi", "time ::: ${timestamp.toDate()}")
+                                posts.add(
+                                    PostDTO(
+                                        profile = profileRef,
+                                        user = "${document.data["nickname"]}",
+                                        created_at = time,
+                                        content = "${document.data["content"]}",
+                                        image_uri = postingImg
+                                    )
                                 )
-                            )
+                            }
+                            posts.sortByDescending { it.created_at }
+                            profileRecyclerAdapter!!.posts = posts
+                            profileRecyclerAdapter!!.notifyDataSetChanged()
                         }
+
                     }
-                    posts.sortByDescending { it.created_at }
-                    profileRecyclerAdapter!!.posts = posts
-                    profileRecyclerAdapter!!.notifyDataSetChanged()
-                }
-                .addOnFailureListener { exception ->
-                    Log.w("error", "Error getting documents.", exception)
-                }
 
 
+                }
         }
     }
-
 }
+

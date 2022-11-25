@@ -24,14 +24,17 @@
         <activity
             android:name=".SignUpActivity"
             android:exported="true"
-            android:label="Make New Account"/>
+            android:label="Make New Account"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
+            android:exported="true"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".SignInActivity"
             android:exported="true"
-            android:label = "Sign In your Account">
+            android:label = "Sign In your Account"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -18,6 +18,8 @@ import kotlinx.android.synthetic.main.home_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProfileRecyclerAdapter(private val context: Context, val post: MutableList<PostDTO>) : RecyclerView.Adapter<ProfileRecyclerAdapter.ViewHolder>()  {
     private val db : FirebaseFirestore = Firebase.firestore
@@ -59,8 +61,12 @@ class ProfileRecyclerAdapter(private val context: Context, val post: MutableList
                 displayImageRef(item.image_uri, image)
             }
 
+            val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
+            sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
+            val time = sf.format(item.created_at)
+
             user.text = item.user
-            create.text = item.created_at
+            create.text = time
             content.text = item.content
         }
 

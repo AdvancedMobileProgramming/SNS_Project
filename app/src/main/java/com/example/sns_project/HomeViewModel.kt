@@ -9,7 +9,7 @@ import java.util.*
 data class PostDTO (
     val profile : StorageReference ?= null,
     val user: String,
-    val created_at: String,
+    val created_at: java.util.Date,
     val content: String,
 //    val image_uri: Bitmap?= null
     val image_uri: StorageReference?= null
