@@ -150,7 +150,8 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
             binding.imageView4.setOnClickListener{
                 lateinit var navController: NavController
                 navController = Navigation.findNavController(binding.root)
-                val bundle = bundleOf("time" to item.created_at.toString())
+                Log.d("haha", "${item.user}${item.created_at}")
+                val bundle = bundleOf("post" to "${item.user}${item.created_at}")
                 navController.navigate(com.example.sns_project.R.id.action_homeFragment_to_commentFragment, bundle)
             }
         }

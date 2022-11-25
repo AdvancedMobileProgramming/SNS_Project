@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -27,7 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class CommentRecyclerAdapter (private val context: Context, val commentList: MutableList<CommentDTO>) : RecyclerView.Adapter<CommentRecyclerAdapter.ViewHolder>() {
+class CommentRecyclerAdapter (private val viewModel: CommentViewModel, val commentList: MutableList<CommentDTO>) : RecyclerView.Adapter<CommentRecyclerAdapter.ViewHolder>() {
     private lateinit var view: View
     private val auth: FirebaseAuth = Firebase.auth //사용자의 계정을 관리
     private val db: FirebaseFirestore = Firebase.firestore
@@ -39,7 +40,6 @@ class CommentRecyclerAdapter (private val context: Context, val commentList: Mut
 
     @SuppressLint("RestrictedApi")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        Log.d("puuuu", comments.size.toString())
         val view = LayoutInflater.from(parent.context)
         val binding = CommentItemBinding.inflate(view, parent, false)
 
@@ -49,7 +49,7 @@ class CommentRecyclerAdapter (private val context: Context, val commentList: Mut
     override fun getItemCount(): Int = comments.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) { //imageView 클릭시 좋아요, 댓글 이벤트 추가하기
-        holder.bind(comments[position])
+        holder.bind(position)
     }
 
     inner class ViewHolder(private val binding: CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -57,12 +57,16 @@ class CommentRecyclerAdapter (private val context: Context, val commentList: Mut
         private val user: TextView = itemView.commentId
         private val content: TextView = itemView.commentView
 
-        fun bind(item: CommentDTO) {
-            displayImageRef(item.profile, profileImg)
-
-
-            user.text = item.user
-            content.text = item.content
+        fun bind(pos: Int) {
+            with (viewModel.getItem(pos)) {
+                displayImageRef(profile, profileImg)
+                itemView.commentId.text = user
+                itemView.commentView.text = content
+            }
+//            displayImageRef(item.profile, profileImg)
+//
+//            user.text = item.user
+//            content.text = item.content
         }
 
         private fun displayImageRef(imageRef: StorageReference?, view: ImageView) {

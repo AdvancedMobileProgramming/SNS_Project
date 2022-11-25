@@ -37,7 +37,6 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="content..."
         android:inputType="textMultiLine"
         android:lines="10"
         app:layout_constraintEnd_toEndOf="parent"

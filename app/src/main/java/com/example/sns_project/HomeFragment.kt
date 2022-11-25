@@ -60,6 +60,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     val posts = mutableListOf<PostDTO>()
 
 
+
     /* private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
         if(it.resultCode == Activity.RESULT_OK) {
             val imageUrl = it.data?.data

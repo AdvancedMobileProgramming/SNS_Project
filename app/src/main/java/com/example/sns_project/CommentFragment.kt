@@ -11,6 +11,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.sns_project.databinding.CommentItemBinding
@@ -29,6 +30,7 @@ import kotlinx.android.synthetic.main.fragment_comment.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 
 class CommentFragment : Fragment(R.layout.fragment_comment) {
     private val auth: FirebaseAuth = Firebase.auth //사용자의 계정을 관리
@@ -50,7 +52,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
     private val ibinding get() = iBinding!!
 
     lateinit var commentRecyclerAdapter: CommentRecyclerAdapter
-    val comments = mutableListOf<CommentDTO>()
+    val comments = ArrayList<CommentDTO>()
 
     private val viewModel: CommentViewModel by viewModels()
 
@@ -71,7 +73,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
 
         initRecycler()
 
-        commentRecyclerAdapter = CommentRecyclerAdapter(this.requireContext(), comments)
+        commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
         binding.root.comment_recycler.adapter = commentRecyclerAdapter
         binding.root.comment_recycler.layoutManager = LinearLayoutManager(this.context)
 
@@ -90,7 +92,8 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                 "date" to Timestamp.now().toDate()
             )
 
-            db.collection("post").document("${currentUserEmail}${arguments?.getString("time")}")
+            Log.d("haha", "${arguments?.getString("post")}")
+            db.collection("post").document("${arguments?.getString("post")}")
                 .collection("comments").add(data)
                 .addOnCompleteListener {
                     Toast.makeText(
@@ -99,6 +102,14 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                         Toast.LENGTH_LONG
                     )
                         .show()
+                    viewModel.addItem(
+                        CommentDTO(
+                            profile = storageRef.child("image/profile/${currentUserEmail}.jpg"),
+                            content = "${data["content"]}",
+                            user = "${data["user"]}",
+                            time = "${data["date"]}"
+                        )
+                    )
 //                    lateinit var navController: NavController
 //                    navController = Navigation.findNavController(binding.root)
 //                    navController.navigate(com.example.sns_project.R.id.action_postingFragment_to_homeFragment)
@@ -115,22 +126,26 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                 }
         }
 
+
+
         return binding.root
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initRecycler() {
-        commentRecyclerAdapter = CommentRecyclerAdapter(this.requireContext(), comments)
+        commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
         binding.root.comment_recycler.adapter = commentRecyclerAdapter
 
         binding.root.comment_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))
 
         CoroutineScope(Dispatchers.Default).launch {
-            db.collection("post").document("${currentUserEmail}${arguments?.getString("time")}")
+            db.collection("post").document("${arguments?.getString("post")}")
                 .collection("comments")
                 .get()
                 .addOnSuccessListener { result ->
                     comments.clear()
                     for (document in result) {
+                        val nickname = getNickname(document.data["user"].toString())
                         comments.add(
                             CommentDTO(
                                 profile = storageRef.child("image/profile/${document.data["user"].toString()}.jpg"),
@@ -141,14 +156,35 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                         )
                     }
 
-                    comments.sortByDescending{it.time}
-                    commentRecyclerAdapter!!.comments = comments
-                    commentRecyclerAdapter!!.notifyDataSetChanged()
+                    val dataObserver: Observer<ArrayList<CommentDTO>> =
+                        Observer { livedata ->
+                            commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
+                            binding.root.comment_recycler.adapter = commentRecyclerAdapter
+                            commentRecyclerAdapter.comments = viewModel.comments
+                        }
+
+                    viewModel.commentsLiveData.observe(viewLifecycleOwner, dataObserver)
+
+                    commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
+                    binding.root.comment_recycler.adapter = commentRecyclerAdapter
+//                    commentRecyclerAdapter!!.comments = viewModel.comments
+//                    commentRecyclerAdapter!!.notifyDataSetChanged()
                 }
                 .addOnFailureListener { exception ->
                     Log.d("error", "error")
                 }
         }
+
+
+    }
+
+    fun getNickname(user : String) {
+        db.collection("users").document(user)
+            .get()
+            .addOnSuccessListener { result ->
+                 //..미해결
+                }
+            }
     }
 
         fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
@@ -159,5 +195,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
 // Failed to download the image
             }
         }
-    }
+
+
+
 

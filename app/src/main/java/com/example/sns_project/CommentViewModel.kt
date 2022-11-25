@@ -1,5 +1,6 @@
 package com.example.sns_project
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.storage.StorageReference
@@ -14,7 +15,7 @@ data class CommentDTO(
 )
 
 class CommentViewModel : ViewModel() {
-    val commentsLiveData = MutableLiveData<ArrayList<CommentDTO>>()
+    val commentsLiveData : MutableLiveData<ArrayList<CommentDTO>> = MutableLiveData<ArrayList<CommentDTO>>()
     val comments  = ArrayList<CommentDTO>()
 
 //    val itemClickEvent = MutableLiveData<Int>()
@@ -31,6 +32,8 @@ class CommentViewModel : ViewModel() {
         comments.removeAt(pos)
         commentsLiveData.value = comments
     }
+
+    fun getItem(pos: Int) =  comments[pos]
 }
 
 

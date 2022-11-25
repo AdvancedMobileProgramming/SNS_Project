@@ -191,7 +191,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
 
-                        db.collection("post").document("${currentUserEmail}${time}")
+                        db.collection("post").document("${document.data["nickname"].toString()}${time}")
                             .set(data)
                             .addOnCompleteListener {
                                 Toast.makeText(
