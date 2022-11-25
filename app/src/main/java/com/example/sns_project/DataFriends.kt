@@ -1,7 +1,9 @@
 package com.example.sns_project
 
-data class DataFriends(
-    var nickname: String,
-    var description: String
-    //var profileImageURL: String,
-)
+import com.google.firebase.storage.StorageReference
+
+data class DataFriends (
+    val profile: StorageReference?= null,
+    val user: String,
+    val nickname: String
+    )

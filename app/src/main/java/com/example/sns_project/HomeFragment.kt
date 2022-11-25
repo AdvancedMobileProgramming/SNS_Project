@@ -58,7 +58,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
     lateinit var homeRecyclerAdapter: HomeRecyclerAdapter
     val posts = mutableListOf<PostDTO>()
-    val friends = mutableListOf<DataFriends>()
+
 
     /* private val startForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { //initialization
         if(it.resultCode == Activity.RESULT_OK) {

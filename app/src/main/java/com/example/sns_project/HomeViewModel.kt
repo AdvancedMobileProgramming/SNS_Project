@@ -12,13 +12,21 @@ data class PostDTO (
     val created_at: java.util.Date,
     val content: String,
 //    val image_uri: Bitmap?= null
-    val image_uri: StorageReference?= null
-
-)
+    val image_uri: StorageReference?= null,
+    val favorite: MutableMap<String, Boolean> = HashMap(),
+    val favoriteCount: Int = 0
+) {
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "user" to user,
+            "favoriteCount" to favoriteCount
+        )
+    }
+}
 
 class HomeViewModel : ViewModel() {
     val postsLiveData = MutableLiveData<ArrayList<PostDTO>>()
-    val posts  = ArrayList<PostDTO>()
+    val posts = ArrayList<PostDTO>()
 
 //    val itemClickEvent = MutableLiveData<Int>()
 
