@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.sns_project.databinding.FragmentFriendsBinding
 import com.example.sns_project.databinding.FragmentFriendsBinding.inflate
 import com.example.sns_project.databinding.FriendsItemBinding
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -28,7 +31,9 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
     private val binding get() = mbinding!!
     private var ibinding : FriendsItemBinding? = null
 
+    private var auth: FirebaseAuth? = Firebase.auth
     private val db: FirebaseFirestore = Firebase.firestore
+    private val currentUserEmail : String = auth?.currentUser?.email.toString()
     private lateinit var databaseRef: DatabaseReference
     private val storage: FirebaseStorage = Firebase.storage
     private val storageRef : StorageReference = storage.getReference()
@@ -43,7 +48,6 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("view", "friend")
 
         mbinding = inflate(inflater, container, false)
         databaseRef = FirebaseDatabase.getInstance().reference
@@ -65,13 +69,15 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
 
         var profileRef: StorageReference = storageRef.child("image/defaultImg.png");
 
-        Log.d("view", "friendadd")
         CoroutineScope(Dispatchers.Default).launch {
-            db.collection("friend")  //friend 컬렉션에서
+            Log.d("hahaha", "$currentUserEmail")
+            db.collection("users").document("$currentUserEmail")
+                .collection("friends")//friend 컬렉션에서
                 .get()                           //데이터 가져옴
                 .addOnSuccessListener { result ->
                     datafriends.clear()
                     for (document in result) {
+                        Log.d("hahaha", "${document.data["nickname"]}")
                         //프로필 이미지는 스토리지에서 가져옴
                         profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
                         datafriends.add(   //데이터 클래스에 데이터 추가

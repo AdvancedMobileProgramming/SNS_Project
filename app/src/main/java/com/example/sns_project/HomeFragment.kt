@@ -75,6 +75,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
     private val binding get() = mBinding!!
     private val ibinding get() = iBinding!!
 
+    private var nickname : String ?= null
+
     @SuppressLint("ResourceType")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,7 +90,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 
         initRecycler()
 
-        homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext(), posts)
+        homeRecyclerAdapter = HomeRecyclerAdapter(this.requireContext() ,currentUserEmail)
         binding.root.home_recycler.adapter = homeRecyclerAdapter
 
         binding.root.home_recycler.addItemDecoration(DividerItemDecoration(this.context, 1))

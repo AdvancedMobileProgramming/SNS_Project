@@ -131,7 +131,17 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                 }
         }
 
+        val dataObserver: Observer<ArrayList<CommentDTO>> =
+            Observer { livedata ->
+                commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
+                binding.root.comment_recycler.adapter = commentRecyclerAdapter
+                commentRecyclerAdapter.comments = viewModel.comments
+            }
 
+        viewModel.commentsLiveData.observe(viewLifecycleOwner, dataObserver)
+
+        commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
+        binding.root.comment_recycler.adapter = commentRecyclerAdapter
 
         return binding.root
     }
@@ -159,7 +169,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                     comments.clear()
                     for (document in result) {
                         val nickname = getNickname(document.data["user"].toString())
-                        comments.add(
+                        viewModel.addItem(
                             CommentDTO(
                                 profile = storageRef.child("image/profile/${document.data["user"].toString()}.jpg"),
                                 content = "${document.data["content"].toString()}",
@@ -169,19 +179,7 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                         )
                     }
 
-                    val dataObserver: Observer<ArrayList<CommentDTO>> =
-                        Observer { livedata ->
-                            commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
-                            binding.root.comment_recycler.adapter = commentRecyclerAdapter
-                            commentRecyclerAdapter.comments = viewModel.comments
-                        }
 
-                    viewModel.commentsLiveData.observe(viewLifecycleOwner, dataObserver)
-
-                    commentRecyclerAdapter = CommentRecyclerAdapter(viewModel, comments)
-                    binding.root.comment_recycler.adapter = commentRecyclerAdapter
-//                    commentRecyclerAdapter!!.comments = viewModel.comments
-//                    commentRecyclerAdapter!!.notifyDataSetChanged()
                 }
                 .addOnFailureListener { exception ->
                     Log.d("error", "error")
