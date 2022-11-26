@@ -7,11 +7,13 @@ import android.media.Image
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -46,8 +48,6 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
         val binding = HomeItemBinding.inflate(view, parent, false)
-        val Usernickname = Firebase.auth.currentUser?.uid.toString()
-
 
         var isDefault = true
         var imageCount = 0
@@ -59,51 +59,54 @@ class HomeRecyclerAdapter(private val context: Context, val postList: MutableLis
             isDefault=!isDefault
             if(isDefault) {
                 binding.imageView2.setImageResource(R.drawable.favorite_click)
-                binding.TextView6.text = "like: " + imageCount
+                binding.TextView6.text = "like: $imageCount"
                 imageCount--
             }
 
             else {
                 binding.imageView2.setImageResource(R.drawable.favorite_border)
-                binding.TextView6.text = "like: " + imageCount
+                binding.TextView6.text = "like: $imageCount"
                 imageCount++
             }
         }
 
 
-        binding.addfriendbtn.setOnClickListener {
+        binding.addfriendbtn.setOnClickListener {    //친구추가 버튼 누르면
 
             Log.d("add", "buttonClick")
 
             CoroutineScope(Dispatchers.Default).launch {
-                    db.collection("users")
-                        .get()
+                    db.collection("users") // users 컬렉션에서
+                        .get()                         // 데이터 받아와서
                         .addOnSuccessListener { result ->
                             for (document in result) {
                                 val friendID = hashMapOf(
-                                    "profile" to document.data["profileImg"].toString(),
-                                    "user" to document.data["email"].toString(),
-                                    "nickname" to document.data["nickname"].toString()
+                                    "profile" to document.data["profileImg"].toString(),   //friend 컬렉션의 "profile"은 users 컬렉션의 "profileImg" 데이터를 받아옴
+                                    "user" to document.data["email"].toString(),           //friend 컬렉션의 "user"은 users 컬렉션의 "email" 데이터를 받아옴
+                                    "nickname" to document.data["nickname"].toString()     //friend 컬렉션의 "nickname"은 users 컬렉션의 "nickname" 데이터를 받아옴
                                 )
 
-                                // friend 컬렉션의 nickname과 "users"의 nickname이 같으면 데이터 추가 X -> 구현해야함
+                                if (document.data["nickname"].toString()          //users 컬렉션의 "nickname"과 피드(home_item)의 "idView"가 같으면
+                                        .equals(binding.idView.text.toString()) )
+                                    // friend 컬렉션의 "nickname"이나 "user(email)"이 이미 있는 경우 "nickname"이나 "user(email)"이 동일한 데이터가 추가되면 안됨 -> 구현 못함
+                                    //    || document.data["nickname"].toString().equals(users컬렉션이랑 어떻게 연결하는거지 ,,,,,, ?))
 
-                                if (document.data["nickname"].toString()
-                                        .equals(binding.idView.text.toString()))
                                 {
                                     Toast.makeText(context, "친구 추가 중", Toast.LENGTH_SHORT)
                                         .show()
-                                    db.collection("friend")
+                                    db.collection("friend")  //friend 컬렉션에 데이터를 추가해라
                                         .add(friendID)
                                         .addOnSuccessListener {
                                             Toast.makeText(context, "친구 추가 완료", Toast.LENGTH_SHORT).show()
+                                            binding.addfriendbtn.visibility = GONE    //친구추가 성공하면 버튼 안보이게
+                                            binding.addfriendbtn.isEnabled = false    //친구추가 성공하면 버튼 비활성화
+                                            // 친구가 피드에 글을 여러개 올릴 경우
+                                        // 그 친구를 추가하면 그 친구가 올린 다른 글 모두 버튼이 사라져야함 ,,,,,
                                         }
                                         .addOnFailureListener {
                                             Toast.makeText(context, "친구 추가 실패", Toast.LENGTH_SHORT).show()
                                         }
                                 }
-
-
                             }
                         }
                 }

@@ -1,14 +1,17 @@
 package com.example.sns_project
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -92,6 +95,8 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
                 "date" to Timestamp.now().toDate()
             )
 
+            hideKeyboard()
+
             Log.d("haha", "${arguments?.getString("post")}")
             db.collection("post").document("${arguments?.getString("post")}")
                 .collection("comments").add(data)
@@ -129,6 +134,14 @@ class CommentFragment : Fragment(R.layout.fragment_comment) {
 
 
         return binding.root
+    }
+
+    private fun hideKeyboard() {
+        if (activity != null && requireActivity().currentFocus != null) {
+            val inputManager: InputMethodManager = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, InputMethodManager.HIDE_NOT_ALWAYS)
+
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")

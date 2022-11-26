@@ -67,17 +67,18 @@ class FriendsFragment: Fragment(R.layout.fragment_friends) { //친구리스트 �
 
         Log.d("view", "friendadd")
         CoroutineScope(Dispatchers.Default).launch {
-            db.collection("friend")
-                .get()
+            db.collection("friend")  //friend 컬렉션에서
+                .get()                           //데이터 가져옴
                 .addOnSuccessListener { result ->
                     datafriends.clear()
                     for (document in result) {
+                        //프로필 이미지는 스토리지에서 가져옴
                         profileRef = storageRef.child("image/profile/${document.data["user"]}.jpg")
-                        datafriends.add(
+                        datafriends.add(   //데이터 클래스에 데이터 추가
                             DataFriends(
-                                profile = profileRef,
-                                user = "${document.data["user"]}",
-                                nickname = "${document.data["nickname"]}"
+                                profile = profileRef,   //friend 컬렉션의 "profile" 데이터를 데이터클래스의 profile에 넣기
+                                user = "${document.data["user"]}",  //friend 컬렉션의 "user" 데이터를 데이터클래스의 user에 넣기
+                                nickname = "${document.data["nickname"]}"  //friend 컬렉션의 "nickname" 데이터들을 데이터클래스의 nickname에 넣기
                             )
                         )
                     }
