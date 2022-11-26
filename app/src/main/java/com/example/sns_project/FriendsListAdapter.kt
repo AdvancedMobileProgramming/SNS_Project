@@ -47,13 +47,12 @@ class FriendsListAdapter(private var context: Context?) :
 
 
             itemView.setOnClickListener {
-                Toast.makeText(it.context, "Nickname : " + item.nickname
-                    , Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    it.context, "Nickname : " + item.nickname, Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
-
-
 
 
     private fun displayImageRef(imageRef: StorageReference?, view: ImageView) {
