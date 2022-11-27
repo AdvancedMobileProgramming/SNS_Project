@@ -8,7 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -47,9 +50,17 @@ class FriendsListAdapter(private var context: Context?) :
 
 
             itemView.setOnClickListener {
-                Toast.makeText(
-                    it.context, "Nickname : " + item.nickname, Toast.LENGTH_SHORT
-                ).show()
+                lateinit var navController: NavController
+                navController = Navigation.findNavController(binding.root)
+                val bundle = bundleOf("friend" to "${item.user}")
+                navController.navigate(
+                    com.example.sns_project.R.id.action_friendsFragment_to_friendProfileFragment,
+                    bundle
+                )
+
+//                Toast.makeText(
+//                    it.context, "Nickname : " + item.nickname, Toast.LENGTH_SHORT
+//                ).show()
             }
         }
     }
@@ -80,4 +91,3 @@ class FriendsListAdapter(private var context: Context?) :
         return datafriends.size
     }
 }
-

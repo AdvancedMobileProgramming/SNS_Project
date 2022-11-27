@@ -7,7 +7,11 @@
     <fragment
         android:id="@+id/friendsFragment"
         android:name="com.example.sns_project.FriendsFragment"
-        android:label="Friends" />
+        android:label="Friends" >
+        <action
+            android:id="@+id/action_friendsFragment_to_friendProfileFragment"
+            app:destination="@id/friendProfileFragment3" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.sns_project.ProfileFragment"
@@ -36,5 +40,9 @@
         android:id="@+id/commentFragment"
         android:name="com.example.sns_project.CommentFragment"
         android:label="CommentFragment" />
+    <fragment
+        android:id="@+id/friendProfileFragment3"
+        android:name="com.example.sns_project.FriendProfileFragment"
+        android:label="FriendProfileFragment" />
 
 </navigation>
