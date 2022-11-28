@@ -114,7 +114,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
 //                         sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
 //                         val time = sf.format(timestamp.toDate())
                             val time = timestamp.toDate()
-                         Log.d("hihihi", "home document get:: ${time}")
+                         Log.d("hihihi", "home document get:: ${timestamp}")
 
                         var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
                         var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
@@ -127,7 +127,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                                  PostDTO(
                                      profile = profileRef,
                                      user = "${document.data["nickname"]}",
-                                     created_at = time,
+                                     created_at = timestamp,
                                      content = "${document.data["content"]}",
                                  )
                              )
@@ -136,17 +136,23 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                                  storageRef.child("image/profile/${document.data["user"]}.jpg")
 
                              Log.d("hihihi",
-                                 "msg :: ${document.data["user"].toString()}${time}.jpg"
+                                 "${document.data["user"].toString()}${timestamp}.jpg".equals("sunho0416@gmail.comMon Nov 28 05:21:04 GMT 2022.jpg")
+                                     .toString()
                              )
-                             Log.d("hihihi", "cabin4nam@naver.comMon Nov 28 13:49:21 GMT+09:00 2022.jpg")
+                             Log.d("hoho",
+                                 "${document.data["user"].toString()}${timestamp}.jpg"
+                             )
+                             Log.d("hoho",
+                                 "sunho0416@gmail.comMon Nov 28 05:21:04 GMT 2022.jpg"
+                             )
                              postingImg =
-                                 storageRef.child("image/posting/${document.data["user"].toString()}${time}.jpg")
+                                 storageRef.child("image/posting/${document.data["user"].toString()}${timestamp}.jpg")
 
                              posts.add(
                                  PostDTO(
                                      profile = profileRef,
                                      user = "${document.data["nickname"]}",
-                                     created_at = time,
+                                     created_at = timestamp,
                                      content = "${document.data["content"]}",
                                      image_uri = postingImg
                                  )

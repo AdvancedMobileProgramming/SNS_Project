@@ -133,7 +133,7 @@ class FriendProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프�
                                     PostDTO(
                                         profile = profileRef,
                                         user = "${document.data["nickname"]}",
-                                        created_at = time,
+                                        created_at = timestamp,
                                         content = "${document.data["content"]}",
                                     )
                                 )
@@ -142,15 +142,15 @@ class FriendProfileFragment : Fragment(R.layout.fragment_myprofile) { //내 프�
                                     storageRef.child("image/profile/${document.data["user"]}.jpg")
 
                                 postingImg =
-                                    storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+                                    storageRef.child("image/posting/${document.data["user"]}${timestamp}.jpg")
 
                                 Log.d("hihi", "user ::: ${document.data["user"]}")
-                                Log.d("hihi", "time ::: ${timestamp.toDate()}")
+                                Log.d("hihi", "time ::: ${timestamp}")
                                 posts.add(
                                     PostDTO(
                                         profile = profileRef,
                                         user = "${document.data["nickname"]}",
-                                        created_at = time,
+                                        created_at = timestamp,
                                         content = "${document.data["content"]}",
                                         image_uri = postingImg
                                     )

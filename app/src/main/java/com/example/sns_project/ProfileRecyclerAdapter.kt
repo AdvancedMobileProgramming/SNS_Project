@@ -63,7 +63,7 @@ class ProfileRecyclerAdapter(private val context: Context, val post: MutableList
 
             val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
             sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            val time = sf.format(item.created_at)
+            val time = sf.format(item.created_at.toDate())
 
             user.text = item.user
             create.text = time

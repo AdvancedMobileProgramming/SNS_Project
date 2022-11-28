@@ -147,7 +147,7 @@ class HomeRecyclerAdapter(private val context: Context, private val currentUserE
 
             val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
             sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-            val time = sf.format(item.created_at)
+            val time = sf.format(item.created_at.toDate())
 
             user.text = item.user
             create.text = time

@@ -2,6 +2,7 @@ package com.example.sns_project
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.Timestamp
 import com.google.firebase.storage.StorageReference
 import java.util.*
 
@@ -9,7 +10,7 @@ import java.util.*
 data class PostDTO (
     val profile : StorageReference ?= null,
     val user: String,
-    val created_at: java.util.Date,
+    val created_at: Timestamp,
     val content: String,
 //    val image_uri: Bitmap?= null
     val image_uri: StorageReference?= null,

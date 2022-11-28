@@ -170,7 +170,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 //        val time = sf.format(timestamp.toDate())
         val time = timestamp.toDate()
 
-        Log.d("hihihi", "posting1 :: ${time.toString()}")
+        Log.d("hihihi", "posting1 :: ${timestamp.toString()}")
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
@@ -182,18 +182,18 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                             "content" to content,
                             "user" to auth.currentUser?.email.toString(), // 현재 로그인 된 유저 정보를 업로드(?)
                             "nickname" to document.data["nickname"].toString(),
-                            "created_at" to time,
+                            "created_at" to timestamp,
                             "image_uri" to imgDataUri
                         )
 
-                        Log.d("hihihi", "posting2 image :: ${currentUserEmail}${time}")
+                        Log.d("hihihi", "posting2 image :: ${currentUserEmail}${timestamp}")
                         //게시물 이미지 정보(uri) storage에 저장.
                         var storageRef = storage.reference
-                        var postingImg = storageRef.child("image/posting/${currentUserEmail}${time}.jpg")
+                        var postingImg = storageRef.child("image/posting/${currentUserEmail}${timestamp}.jpg")
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
-                        Log.d("hihihi", "posting3 post document:: ${document.data["nickname"].toString()}${time}")
-                        db.collection("post").document("${document.data["nickname"].toString()}${time}")
+                        Log.d("hihihi", "posting3 post document:: ${document.data["nickname"].toString()}${timestamp}")
+                        db.collection("post").document("${document.data["nickname"].toString()}${timestamp}")
                             .set(data)
                             .addOnCompleteListener {
                                 Toast.makeText(
