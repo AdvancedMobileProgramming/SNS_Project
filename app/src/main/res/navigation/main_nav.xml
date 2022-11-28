@@ -15,7 +15,11 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.example.sns_project.ProfileFragment"
-        android:label="Edit Profile" />
+        android:label="Edit Profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/postingFragment"
         android:name="com.example.sns_project.PostingFragment"

@@ -165,12 +165,8 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
         }
 
         var timestamp = Timestamp.now()
-//        val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
-//        sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
-//        val time = sf.format(timestamp.toDate())
         val time = timestamp.toDate()
 
-        Log.d("hihihi", "posting1 :: ${timestamp.toString()}")
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
@@ -186,13 +182,11 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                             "image_uri" to imgDataUri
                         )
 
-                        Log.d("hihihi", "posting2 image :: ${currentUserEmail}${timestamp}")
                         //게시물 이미지 정보(uri) storage에 저장.
                         var storageRef = storage.reference
                         var postingImg = storageRef.child("image/posting/${currentUserEmail}${timestamp}.jpg")
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
-                        Log.d("hihihi", "posting3 post document:: ${document.data["nickname"].toString()}${timestamp}")
                         db.collection("post").document("${document.data["nickname"].toString()}${timestamp}")
                             .set(data)
                             .addOnCompleteListener {
@@ -202,6 +196,9 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                                     Toast.LENGTH_LONG
                                 )
                                     .show()
+
+                                binding.editTextTextMultiLine.setText("")
+                                binding.imageButton.setImageBitmap(null)
                                 //finish() // 업로드가 성공한다면 이 화면을 종료하고 메인 페이지로 돌아감.
                             }
                             .addOnFailureListener {
