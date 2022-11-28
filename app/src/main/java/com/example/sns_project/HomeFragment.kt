@@ -107,12 +107,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                  .addOnSuccessListener { result ->
                      posts.clear()
                      for (document in result) {
+
                          val timestamp = document.data["created_at"] as com.google.firebase.Timestamp
 
 //                         val sf = SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.KOREA)
 //                         sf.timeZone = TimeZone.getTimeZone("Asia/Seoul")
 //                         val time = sf.format(timestamp.toDate())
                             val time = timestamp.toDate()
+                         Log.d("hihihi", "home document get:: ${time}")
 
                         var profileRef : StorageReference =  storageRef.child("image/defaultImg.png");
                         var postingImg : StorageReference =  storageRef.child("image/defaultImg.png");
@@ -136,7 +138,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                              Log.d("hihihi",
                                  "msg :: ${document.data["user"].toString()}${time}.jpg"
                              )
-                             Log.d("hihihi", "mryosan1004@naver.comMon Nov 28 13:36:26 GMT+09:00 2022.jpg")
+                             Log.d("hihihi", "cabin4nam@naver.comMon Nov 28 13:49:21 GMT+09:00 2022.jpg")
                              postingImg =
                                  storageRef.child("image/posting/${document.data["user"].toString()}${time}.jpg")
 

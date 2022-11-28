@@ -170,6 +170,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 //        val time = sf.format(timestamp.toDate())
         val time = timestamp.toDate()
 
+        Log.d("hihihi", "posting1 :: ${time.toString()}")
         db.collection("users")
             .get()
             .addOnSuccessListener { result ->
@@ -185,12 +186,13 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
                             "image_uri" to imgDataUri
                         )
 
+                        Log.d("hihihi", "posting2 image :: ${currentUserEmail}${time}")
                         //게시물 이미지 정보(uri) storage에 저장.
                         var storageRef = storage.reference
                         var postingImg = storageRef.child("image/posting/${currentUserEmail}${time}.jpg")
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
-
+                        Log.d("hihihi", "posting3 post document:: ${document.data["nickname"].toString()}${time}")
                         db.collection("post").document("${document.data["nickname"].toString()}${time}")
                             .set(data)
                             .addOnCompleteListener {
