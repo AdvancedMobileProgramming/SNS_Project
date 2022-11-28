@@ -133,8 +133,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) { //피드창, R.layout.fr
                              profileRef =
                                  storageRef.child("image/profile/${document.data["user"]}.jpg")
 
+                             Log.d("hihihi",
+                                 "msg :: ${document.data["user"].toString()}${time}.jpg"
+                             )
+                             Log.d("hihihi", "mryosan1004@naver.comMon Nov 28 13:36:26 GMT+09:00 2022.jpg")
                              postingImg =
-                                 storageRef.child("image/posting/${document.data["user"]}${timestamp.toDate()}.jpg")
+                                 storageRef.child("image/posting/${document.data["user"].toString()}${time}.jpg")
 
                              posts.add(
                                  PostDTO(

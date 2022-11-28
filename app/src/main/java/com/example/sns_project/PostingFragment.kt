@@ -187,7 +187,7 @@ class PostingFragment: Fragment() { //게시물 포스팅 창 R.layout.fragment_
 
                         //게시물 이미지 정보(uri) storage에 저장.
                         var storageRef = storage.reference
-                        var postingImg = storageRef.child("image/posting/${currentUserEmail}${Date()}.jpg")
+                        var postingImg = storageRef.child("image/posting/${currentUserEmail}${time}.jpg")
                         var savePostingImg = imgDataUri?.let { postingImg.putFile(it) }
 
 
