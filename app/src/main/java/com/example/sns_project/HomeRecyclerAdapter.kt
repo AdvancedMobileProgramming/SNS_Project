@@ -64,12 +64,8 @@ class HomeRecyclerAdapter(private val context: Context, private val currentUserE
             isDefault = !isDefault
             if (isDefault) {
                 binding.imageView2.setImageResource(R.drawable.favorite_click)
-                binding.TextView6.text = "like: $imageCount"
-                imageCount--
             } else {
                 binding.imageView2.setImageResource(R.drawable.favorite_border)
-                binding.TextView6.text = "like: $imageCount"
-                imageCount++
             }
         }
 

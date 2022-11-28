@@ -103,12 +103,6 @@
             android:layout_height="match_parent"
             app:srcCompat="@drawable/ic_chat_black" />
 
-        <TextView
-            android:id="@+id/TextView6"
-            android:layout_width="35dp"
-            android:layout_height="50dp"
-            android:hint="like: 0" />
-
     </LinearLayout>
 
 </LinearLayout>

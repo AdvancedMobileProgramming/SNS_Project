@@ -197,7 +197,7 @@ class SignUpActivity : AppCompatActivity() {
 
         if(!Pattern.matches(passwordPattern, password)) {
             Toast.makeText(
-                baseContext,"최소 하나의 문자와 숫자를 포함한 8자 이상의 비밀번호가 필요합니다.",
+                baseContext,"최소 하나의 영문자와 숫자, 특수문자를 포함한 8자 이상의 비밀번호가 필요합니다.",
                 Toast.LENGTH_SHORT
             ).show();
             return false;
